@@ -1,0 +1,54 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Add Category {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Category Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'add_categories' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Select Master Category:</label>
+						<select class="form-control" name="budget_category_id" id="budget_category_id" required>
+                             <option selected>--select master category--</option>
+                            {% for newmastercategory in mastercategory %}
+                            <option value="{{newmastercategory.id}}" >{{newmastercategory.category_name}}</option>
+                            {% endfor %}
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Category Name :</label>
+						<input type="text" name="subcategory_name" required id="subcategory_name" class="form-control" placeholder="Category Name">
+                      </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">ADD</button>
+                        <a href="{% url 'category' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,95 @@
+{% load static %}
+<div id="toaster"></div>
+<div class="wrapper">  
+<aside class="left-sidebar bg-sidebar"> 
+          <div id="sidebar" class="sidebar">
+            <div class="app-brand">
+              <a href="{% url 'dashboard' %}" title="Sleek Dashboard">
+                <span class="brand-name text-truncate">
+                   Budget Coach
+                </span> 
+              </a>
+            </div>
+            <div class="sidebar-scrollbar">
+			    <ul class="nav sidebar-inner" id="sidebar-menu">
+                  	<li class="{{dashboard_page}}">
+                              <a class="sidenav-item-link" href="{% url 'dashboard' %}">
+                                  <i class="fas fa-tachometer-alt" style='font-size:20px' ></i>
+                                <span style="font-size: 13px;" class="nav-text">Dashboard</span>
+							  </a>
+					</li>
+                    <li  class="has-sub {{userdetail_page}}">
+                        <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#app"
+                          aria-expanded="false" aria-controls="app">
+                            <i class="fas fa-users" style='font-size:20px'></i>
+                          <span class="nav-text">User Details</span> <b class="caret"></b>
+                        </a>
+                        <ul  class="collapse"  id="app" data-parent="#sidebar-menu">
+                          <div class="sub-menu">
+                               <li>
+                                  <a class="sidenav-item-link" href="{% url 'userdetails' %}">
+                                    <span class="nav-text">Bank Details</span>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="sidenav-item-link" href="{% url 'creditcarddetails' %}">
+                                    <span class="nav-text">Credit Card Details</span>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="sidenav-item-link" href="{% url 'otherloans' %}">
+                                    <span class="nav-text">Other Loans</span>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="sidenav-item-link" href="{% url 'familydetails' %}">
+                                    <span class="nav-text">Family Details</span>
+                                  </a>
+                                </li>
+
+
+                            </div>
+                        </ul>
+                    </li>
+                    <li class="{{monthlyexpenses_page}}">
+                              <a class="sidenav-item-link" href="{% url 'userestimates' %}">
+                                  <i class="fas fa-dollar-sign"  style='font-size:20px'></i>
+                                <span style="font-size: 13px;" class="nav-text">Estimate Expenses</span>
+							  </a>
+					</li>
+                    <li class="{{actualexpenses_page}}">
+                              <a class="sidenav-item-link" href="{% url 'actualexpenses' %}">
+                                  <i class="far fa-money-bill-alt" style='font-size:20px'></i>
+                                <span style="font-size: 13px;" class="nav-text">Actual Expenses</span>
+							  </a>
+					</li>
+                    <li class="">
+                              <a class="sidenav-item-link" href="">
+                                  <i class="fa fa-calculator" style='font-size:20px'></i>
+                                <span style="font-size: 13px;" class="nav-text">Debt Reduction <br>Calculator</span>
+							  </a>
+					</li>
+
+                    <!--<li class="has-sub">
+                        <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#app2"
+                          aria-expanded="false" aria-controls="app2">
+                            <i class="fas fa-users" style='font-size:20px'></i>
+                          <span class="nav-text">Actual Expenses</span> <b class="caret"></b>
+                        </a>
+                        <ul  class="collapse"  id="app2" data-parent="#sidebar-menu">
+                          <div class="sub-menu">
+                              {% for newmonthdata in monthdata %}
+                               <li>
+                                  <a class="sidenav-item-link" href="{% url 'userdetails' %}">
+                                    <span class="nav-text">{{newmonthdata.month_name}}</span>
+                                  </a>
+                                </li>
+                              {% endfor %}
+                           </div>
+                        </ul>
+                    </li>-->
+
+                </ul>
+
+			 </div>
+</aside>

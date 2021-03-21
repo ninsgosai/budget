@@ -1,0 +1,90 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %}Subcategories {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                  <h2>Subcategories</h2>
+                  <a href="{% url 'add_subcategories' %}"  title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">+</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+                  <div class="basic-data-table">
+                     <table id="basic-data-table" class="table nowrap" style="width:100%">
+                        <thead>
+                           <tr>
+                              <th>Sl No</th>
+                              <th>Subcategory Name</th>
+                              <th>Category Name</th>
+                              <th>Edit</th>
+                              <th>Delete</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for newallsubcategory in allsubcategory %}
+                               <tr>
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{newallsubcategory.last_category_name}}</td>
+                                  <td>{{newallsubcategory.category_name}}</td>
+                                  <td>
+                                       <form method="POST" action="{% url 'edit_subcategory' %}">
+                                           {% csrf_token %}
+                                           <input type="hidden" name="subcategory_ids" value="{{newallsubcategory.id}}">
+                                           <button type="submit"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                       </form>
+                                  </td>
+                                  <td>
+                                    <i data-subcategory_id="{{newallsubcategory.id}}" id="delete_subcategory" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                  </td>
+                               </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="subcategory_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'delete_subcategory' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="subcat_id" id="subcat_id">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

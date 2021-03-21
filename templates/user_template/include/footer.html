@@ -1,0 +1,147 @@
+{% load static %}
+    <footer class="footer mt-auto">
+        <div class="copyright bg-white">
+          <p>
+            &copy; <span id="copy-year">2020</span> Copyright Budget Coach
+          </p>
+        </div>
+        <script>
+            var d = new Date();
+            var year = d.getFullYear();
+            document.getElementById("copy-year").innerHTML = year;
+        </script>
+    </footer>
+  </div>
+</div>
+
+  
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+ <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+ <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/slimscrollbar/jquery.slimscroll.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/jekyll-search.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/charts/Chart.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/jvectormap/jquery-jvectormap-world-mill.js' %}"></script>
+ <script src="{% static 'assets/plugins/daterangepicker/moment.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/daterangepicker/daterangepicker.js' %}"></script>
+ <script src="{% static 'assets/js/sleek.bundle.js' %}"></script>
+ <script src="{% static 'assets/plugins/data-tables/jquery.datatables.min.js' %}"></script>
+ <script src="{% static 'assets/plugins/data-tables/datatables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin_js/admin_user.js' %}"></script>
+{% if userdetail_page %} <script src="{% static 'users_js/userdetails.js' %}"></script> {% endif %}
+{% if monthlyexpenses_page %} <script src="{% static 'users_js/monthly_expenses.js' %}"></script> {% endif %}
+{% if actualexpenses_page %} <script src="{% static 'users_js/actual_expense.js' %}"></script> {% endif %}
+
+<script>
+jQuery(document).ready(function() {
+jQuery('#basic-data-table').DataTable({
+  "dom": '<"row justify-content-between top-information"lf>rt<"row justify-content-between bottom-information"ip><"clear">'
+});
+});
+
+$("#alertmsg").show().delay(5000).fadeOut();
+
+
+$(document).on('click','#user_change_password_button',function(){
+    $("#user_password_confirmation_modal").modal('toggle');
+});
+
+function userpasswordmatchFunction(){
+    var current_password=$("#current_password").val();
+    $.ajax({
+            url: '/dashboard/checkuserpassword',
+            method: 'POST',
+            data: {
+                'current_password' : current_password,
+                 csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(result)
+            {
+                if (result==1){
+                      $("#user_current_password_error").hide();
+                      $('#user_password_button').attr('disabled',false);
+                }else{
+                      $("#user_current_password_error").show();
+                      $('#user_password_button').attr('disabled',true);
+                }
+            }
+        });
+}
+function PaymentCategoryFunction(){
+    var payment_category=$("#payment_category").val();
+    if (payment_category=='expense'){
+        $("#dynamic_expense_span").show();
+        $("#dynamic_income_span").hide();
+    }else{
+        $("#dynamic_expense_span").hide();
+        $("#dynamic_income_span").show();
+    }
+}
+
+function usernewpasswordFunction(){
+    var new_password=$("#new_password").val();
+    var password=$("#password").val();
+    if (new_password==password){
+         $("#user_retype_password_error").hide();
+         $('#user_password_button').attr('disabled',false);
+    }else{
+         $("#user_retype_password_error").show();
+         $('#user_password_button').attr('disabled',true);
+    }
+}
+
+$(document).on('click','#user_password_button',function(){
+    var current_password=$("#current_password").val();
+    var new_password=$("#new_password").val();
+    var password=$("#password").val();
+    if (current_password=="" || new_password=="" || password==""){
+         $("#user_main_error").show();
+         $('#user_password_button').attr('disabled',true);
+    }else{
+        $("#user_main_error").hide();
+        $('#user_password_button').attr('disabled',false);
+        $.ajax({
+            url: '/dashboard/updateuserpassword',
+            method: 'POST',
+            data: {
+                'password' : password,
+                 csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(result)
+            {
+                Swal.fire(
+                      'Success!',
+                      'password changed successfully!',
+                      'success'
+                    );
+                    $("#current_password").val("");
+                    $("#new_password").val("");
+                    $("#password").val("");
+                    $("#user_password_confirmation_modal").modal('toggle')
+            }
+        });
+    }
+})
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

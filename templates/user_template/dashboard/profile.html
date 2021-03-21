@@ -1,0 +1,89 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} User Profile {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Update Profile Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'updateprofile' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>First Name :</label>
+						<input type="text"  value="{{userdata.username}}" name="user_name" required id="user_name" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Last Name :</label>
+						<input type="text"  value="{{userdata.lastname}}" name="last_name" required id="last_name" class="form-control">
+                      </div>
+                      {% comment %} <div class="form-group"> {% endcomment %}
+                        {% comment %} <label>Password:</label> {% endcomment %}
+						<input type="hidden"  value="{{userdata.password}}" name="user_password" required id="user_password" class="form-control" >
+                      {% comment %} </div> {% endcomment %}
+                      <div class="form-group">
+                        <label>Birthdate:</label>
+						<input type="date"  value="{{userdata.dateFormat_birthdate}}" name="user_birthdate" required id="user_birthdate" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Gender:</label>
+						<select class="form-control"  id="user_gender" name="user_gender">
+                            <option value="male" {% if userdata.gender == 'male' %}selected{% endif %}>Male</option>
+                            <option value="female" {% if userdata.gender == 'female' %}selected{% endif %}>Female</option>
+                            <option value="other" {% if userdata.gender == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Mobile:</label>
+						<input type="text"  value="{{userdata.mobile}}" name="user_mobile" required id="user_mobile" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Street:</label>
+						<input type="text"  value="{{userdata.address}}" name="user_street" required id="user_street" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>City:</label>
+						<input type="text"  value="{{userdata.address_city}}" name="user_city" required id="user_city" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Country:</label>
+						<input type="text"  value="{{userdata.address_country}}" name="user_country" required id="user_country" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Pincode:</label>
+						<input type="text"  value="{{userdata.address_pincode}}" name="user_pincode" required id="user_pincode" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Profile Photo:{% if userdata.profile_pic %}<a href="{{userdata.profile_pic.url}}">{{userdata.profile_pic.url}}</a>{% endif %}</label>
+						<input type="file" accept="image/*"  value="{{userdata.address_pincode}}" name="user_photo" id="user_photo" class="form-control" >
+                      </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">UPDATE</button>
+                        <a href="{% url 'admindashboard' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}

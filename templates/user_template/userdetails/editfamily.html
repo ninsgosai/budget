@@ -1,0 +1,81 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Edit Family Member {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Edit Family Member Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      
+                      <div class="form-group">
+                        <label>Family Member Name :</label>
+						<input type="text" name="username" value="{{userdata.username}}" required id="username" class="form-control" placeholder="Name">
+                      </div>
+                      <div class="form-group">
+                        <label>Family Member Age :</label>
+						<input type="text" name="age" required id="age"  value="{{userdata.age}}" class="form-control" placeholder="Age">
+                      </div>
+                      <div class="form-group">
+                        <label>Gender:</label>
+						<select class="form-control" name="gender" id="gender">
+
+                            <option value="male" {% if userdata.gender == "male" %} selected {% endif %} >Male</option>
+                            <option value="female" {% if userdata.gender == "female" %} selected {% endif %} >Female</option>
+                            <option value="other" {% if userdata.gender == "other" %} selected {% endif %} >Other</option>
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Family Member Email :</label>
+						<input type="text" name="email" value="{{userdata.email}}" required id="email" class="form-control" placeholder="Email">
+                      </div>
+                       <div class="form-group">
+                        <label>Mobile Number :</label>
+						<input type="text" name="mobile" value="{{userdata.mobile}}" required id="mobile" class="form-control" placeholder="Mobile">
+                       </div>
+                       <div class="form-group">
+                        <label>Address :</label>
+                          <textarea class="form-control"  placeholder="Address" name="address" id="address">{{userdata.address}}</textarea>
+                       </div>
+                       <div class="form-group">
+                        <label>Yearly Income :</label>
+                          <input type="text" class="form-control"  value="{{userdata.income}}"  placeholder="Income(only digits)" name="income" id="income">
+                       </div>
+                      {% comment %} <div class="form-group">
+                        <label>Goal :</label>
+                          <textarea class="form-control"  placeholder="Goal"    name="goal" id="goal">{{userdata.goal}}</textarea>
+                       </div> {% endcomment %}
+                      
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">UPDATE</button>
+                        <a href="{% url 'familydetails' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+
+{% endblock content %}

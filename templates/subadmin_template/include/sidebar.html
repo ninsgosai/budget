@@ -1,0 +1,29 @@
+{% load static %}
+<div id="toaster"></div>
+<div class="wrapper">  
+<aside class="left-sidebar bg-sidebar"> 
+          <div id="sidebar" class="sidebar">
+            <div class="app-brand">
+              <a href="{% url 'subadmindashboard' %}" title="Sleek Dashboard">
+                <span class="brand-name text-truncate">
+                   Budget Coach
+                </span> 
+              </a>
+            </div>
+            <div class="sidebar-scrollbar">
+			    <ul class="nav sidebar-inner" id="sidebar-menu">
+                  	<li class="{{subadmin_dashboard_page}}">
+                              <a class="sidenav-item-link" href="{% url 'subadmindashboard' %}">
+                                  <i class="fas fa-tachometer-alt"  style='font-size:20px'></i>
+                                <span class="nav-text">Dashboard</span>
+							  </a>
+					</li>
+                    <li class="{{subadmin_user_page}}">
+                              <a class="sidenav-item-link" href="{% url 'subadminusers' %}">
+                                  <i class="fas fa-users" style='font-size:20px'></i>
+                                <span class="nav-text">Users</span>
+							  </a>
+					</li>
+                </ul>
+			 </div>
+</aside>

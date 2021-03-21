@@ -1,0 +1,88 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %}Saving Category {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                  <h2>Saving Categories</h2>
+                  <a href="{% url 'addsavingcategory' %}"  title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">+</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+                  <div class="basic-data-table">
+                     <table id="basic-data-table" class="table nowrap" style="width:100%">
+                        <thead>
+                           <tr>
+                              <th>Sl No</th>
+                              <th>Category Name</th>
+                              <th>Edit</th>
+                              <th>Delete</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for newsavingcategory in savingcategory %}
+                               <tr>
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{newsavingcategory.saving_category_name}}</td>
+                                  <td>
+                                       <form method="POST" action="{% url 'editsavingcategory' %}">
+                                           {% csrf_token %}
+                                           <input type="hidden" name="save_id" value="{{newsavingcategory.id}}">
+                                           <button type="submit"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                       </form>
+                                  </td>
+                                  <td>
+                                    <i data-saving_category_id="{{newsavingcategory.id}}" id="delete_saving_category" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                  </td>
+                               </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="saving_category_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'delete_saving_category' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="saving_catid" id="saving_catid">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

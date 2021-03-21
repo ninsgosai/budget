@@ -1,0 +1,118 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Dashboard {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+       <div class="row">
+        <div class="col-12">
+
+
+                 {% if messages %}
+                        <ul class="messages">
+                            {% for msg in messages %}
+                                <li>
+                                    <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                        {{msg.message}}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                {% endif %}
+                <div class="row">
+                            <div class="col-md-6 col-lg-6 col-xl-3">
+                                <div class="media widget-media p-4 bg-white border">
+                                    <div class="icon rounded-circle mr-4 bg-primary">
+                                        <i class="fas fa-user" style="font-size:20px;color:white;" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <h4 class="text-primary mb-2">{{subadmincount}}</h4>
+                                        <p>Total Subadmins</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-xl-3">
+                                <div class="media widget-media p-4 bg-white border">
+                                    <div class="icon rounded-circle bg-warning mr-4">
+                                        <i class="fas fa-user" style="font-size:20px;color:white;" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <h4 class="text-primary mb-2">{{usercount}}</h4>
+                                        <p>Total Active Users</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-xl-3">
+                                <div class="media widget-media p-4 bg-white border">
+                                    <div class="icon rounded-circle mr-4 bg-danger">
+                                        <i class="fas fa-user" style="font-size:20px;color:white;" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <h4 class="text-primary mb-2">{{totalusercount}}</h4>
+                                        <p>Total Users</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-xl-3">
+                                <div class="media widget-media p-4 bg-white border">
+                                    <div class="icon bg-success rounded-circle mr-4">
+                                      <i class="fa fa-list-alt" style="font-size:20px;color:white;" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <h4 class="text-primary mb-2">100</h4>
+                                        <p>Lorem lipsum</p>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+                <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card card-default">
+                                <div class="card-header card-header-border-bottom">
+                                    <h2>Recent Added Subadmins (in 7 days)</h2>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        {% for newsubadmin in subadmin %}
+                                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                                              {{newsubadmin.subadmin_name}}
+                                          </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card card-default">
+                                <div class="card-header card-header-border-bottom">
+                                    <h2>Recent Added Users (in 7 days)</h2>
+                                </div>
+                                <div class="card-body">
+                                    {% for newusers in users%}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{newusers.username}}
+                                        </li>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div> 
+                 </div>
+
+
+
+
+         </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+    {% endblock content %}

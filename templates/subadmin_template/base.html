@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Budget Coach | {% block page_title %}{% endblock %}</title>
+	{% include "subadmin_template/include/head.html" %}
+</head>
+<body class="header-fixed sidebar-fixed sidebar-dark header-light" id="body">
+	{% include "subadmin_template/include/sidebar.html" %}
+	{% include "subadmin_template/include/header.html" %}
+	{% block content %} {% endblock content %}
+	{% include "subadmin_template/include/footer.html" %}
+</body>
+</html>

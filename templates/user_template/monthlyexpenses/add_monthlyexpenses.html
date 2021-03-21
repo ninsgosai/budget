@@ -1,0 +1,761 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Add Monthly Expenses {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+                         <!--for Income Details-->
+                        <div class="alert alert-primary alert-highlighted" role="alert">
+											Add Estimation for <span class="badge badge-secondary">{{month_name}}</span>
+						</div><br>
+                        {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                        {% endif %}
+
+<!--Add Goals-->
+
+<div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">Add Goals Here</h4>
+                            </div>
+                            <div class="card-body">
+                                    <form class="form-inline" method="POST" action="{% url 'addgoal' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+                                        <input type="text" placeholder="Enter Goal" class="form-control mb-2 mr-sm-2" name="goal" id="goal">
+                                        <input type="number" oninvalid="this.setCustomValidity('Please Enter Amount')" oninput="this.setCustomValidity('')" required  class="form-control mb-2 mr-sm-2" id="goal_amount" name="goal_amount" placeholder="Amount">
+                                        <input type="date" placeholder="Select Statrting Date" class="form-control mb-2 mr-sm-2" name="start_date" id="start_date">
+                                        <input type="date" placeholder="Select Completion Date" class="form-control mb-2 mr-sm-2" name="end_date" id="end_date">
+
+                                        <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                                    </form><br>
+                                        <table class="table">
+												<thead>
+													<tr>
+														<th scope="col">Goal</th>
+														<th scope="col">Starting From</th>
+														<th scope="col">Completion Date</th>
+														<th scope="col">Aomunt</th>
+														<th scope="col">Edit</th>
+														<th scope="col">Delete</th>
+													</tr>
+												</thead>
+												<tbody id="dynamic_income_table">
+                                                         {% if goals %}
+                                                         {% for goal in goals %}
+                                                        <tr>
+                                                            <td>{{goal.goal}}</td>
+                                                            <td>{{goal.start_date}}</td>
+                                                            <td>{{goal.deadline_date}}</td>
+                                                            <td>${{goal.goal_amount}}</td>
+                                                            <td>
+                                                                <button type="button" id="edit_goal" class="mb-1 btn btn-sm btn-outline-success" onclick="editGoal({{goal.id}})" >
+                                                                    <i  class="fas fa-edit"></i>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <form action="{% url 'delete_goal' %}" method="POST">
+                                                                    {% csrf_token %}
+                                        <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+
+                                                                    <input type="hidden" name="goal_id" value="{{goal.id}}">
+                                                                    <button type="submit" id="submit_goal-{{goal.id}}" hidden></button>
+                                                                    <button type="button" onclick="deleteGoal({{goal.id}})" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td colspan="3">No Data Available</td>
+                                                            <td></td>
+                                                         </tr>
+                                                        {% endif %}
+                                                </tbody>
+                                            </table>
+                                </div>
+                        </div>
+
+<!--Add Goals-->
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">Add Income Datails Here</h4>
+                            </div>
+                            <div class="card-body">
+                                    <form class="form-inline" method="POST" action="{% url 'insertusserincome' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+                                        <!-- <input type="text" required class="form-control mb-2 mr-sm-2" id="name" placeholder="Family Member Name" name="name"> -->
+                                        <select class="form-control mb-2 mr-sm-2" oninvalid="this.setCustomValidity('Please Select Any Family Member')" oninput="this.setCustomValidity('')" name="name" id="" required>
+                                            <option value="">Select Family Member</option>
+                                            <option value="{{user.username}}">{{user.username}}</option>
+                                            {% for family in user.userfamilymodel_set.all %}
+                                            <option value="{{family.username}}">{{family.username}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <select class="form-control mb-2 mr-sm-2" oninvalid="this.setCustomValidity('Please Select Income Type')" oninput="this.setCustomValidity('')" name="income_category" id="" required>
+                                            <option value="">Select Income Category</option>
+                                            {% for family in income_categories %}
+                                            <option value="{{family.income_category_name}}">{{family.income_category_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input type="number" oninvalid="this.setCustomValidity('Please Enter Income')" oninput="this.setCustomValidity('')" required  class="form-control mb-2 mr-sm-2" id="income" name="income" placeholder="Income (Numbers Only)">
+                                        <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                                    </form><br>
+                                        <table class="table">
+												<thead>
+													<tr>
+														<th scope="col">Family Member Name</th>
+														<th scope="col">Income</th>
+														<th scope="col">Income Category</th>
+														<th scope="col">Edit</th>
+														<th scope="col">Delete</th>
+													</tr>
+												</thead>
+												<tbody id="dynamic_income_table">
+                                                {% if not incomedata %}
+                                                         <tr>
+                                                            <td></td>
+                                                            <td colspan="2">No Data Available</td>
+                                                         </tr>
+                                                {% else %}
+                                                    {% for newincomedata in incomedata %}
+                                                        <tr>
+                                                            <td>{{newincomedata.name}}</td>
+                                                            <td>$ {{newincomedata.income}}</td>
+                                                            <td>{{newincomedata.income_category}}</td>
+                                                            <td>
+                                                                <button type="button" data-edit_income_id="{{newincomedata.id}}" id="edit_income" class="mb-1 btn btn-sm btn-outline-success">
+                                                                    <i  class="fas fa-edit"></i>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <form action="{% url 'deleteincome' %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="month" value="{{newincomedata.month}}">
+                                                                    <input type="hidden" name="income_id" value="{{newincomedata.id}}">
+                                                                    <button type="submit" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                     {% endfor %}
+                                                        <tr>
+                                                            <td>Total Income</td>
+                                                            <td>$ {{FinalIncome}}</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Tax Included Income</td>
+                                                            <td >$ {{Taxincluded_FinalTotal}} <input type="hidden" id="total" value="{{Taxincluded_FinalTotal}}"></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                </div>
+                        </div>
+
+                        <!- for Savings ->
+
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">Add Tax Datails Here</h4>
+                            </div>
+                            <div class="card-body">
+                                    <form class="form-inline" method="POST" action="{% url 'inserttax' %}">
+                                            {% csrf_token %}
+                                           <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+                                           <select class="form-control mb-2 mr-sm-2" oninvalid="this.setCustomValidity('Please Select Tax Category')" oninput="this.setCustomValidity('')" id="tax_category_id" name="tax_category_id">
+                                                <option>--select tax--</option>
+                                                {% for newalltax in alltax %}
+                                                    <option value="{{newalltax.id}}">{{newalltax.tax_category_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <select class="form-control mb-2 mr-sm-2" oninvalid="this.setCustomValidity('Please Select Any Family Member')" oninput="this.setCustomValidity('')" name="member_name" id="member_name" required>
+                                                <option value="">Select Family Member</option>
+                                                <option value="{{user.username}}">{{user.username}}</option>
+                                                {% for family in user.userfamilymodel_set.all %}
+                                                <option value="{{family.username}}">{{family.username}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="number" class="form-control mb-2 mr-sm-2" name="tax_per" id="tax_per" oninput="calculateAmount()" placeholder="Tax (%) (Numbers Only)"> - Or - 
+                                            <input type="number" class="form-control mb-2 mr-sm-2" name="tax_amt" id="tax_amt" oninput="calculatePercentage()" placeholder="Tax (Amount) (Numbers Only)">
+                                            <button type="submit" class="btn btn-primary mb-2">ADD</button>
+                                    </form><br>
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Family Member Name</th>
+                                                    <th scope="col">Tax Category</th>
+                                                    <th scope="col">Tax(%)</th>
+                                                    <th scope="col">Tax(Amount)</th>
+                                                    <th scope="col">Edit</th>
+                                                    <th scope="col">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_tax_table">
+                                            {% if not taxdata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="3">No Data Available</td>
+                                                    </tr>
+                                            {% else %}
+                                                {% for newtaxdata in taxdata %}
+                                                    <tr>
+                                                        <td>{{newtaxdata.member_name}}</td>
+                                                        <td>{{newtaxdata.tax_category_name}}</td>
+                                                        <td>{{newtaxdata.tax_per}}%</td>
+                                                        <td>$ {{newtaxdata.tax_amt}}</td>
+                                                        <td>
+                                                                <button data-tax_id="{{newtaxdata.id}}" id="edit_tax" type="button"  class="mb-1 btn btn-sm btn-outline-success">
+                                                                    <i  class="fas fa-edit"></i>
+                                                                </button>
+                                                        </td>
+                                                        <td>
+                                                            <form action="{% url 'deletetax' %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="month" value="{{newtaxdata.month}}">
+                                                                    <input type="hidden" name="tax_id" value="{{newtaxdata.id}}">
+                                                                    <button type="submit" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                 {% endfor %}
+                                                    <tr>
+                                                            <td>Total Tax</td>
+                                                            <td></td>
+                                                            <td>{{FinalTax}} %</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                    </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+                        <!-- for Savings -->
+
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">Add Savings Datails Here</h4>
+                            </div>
+                            <div class="card-body">
+                                    <form class="form-inline" method="POST" action="{% url 'insertsavings' %}">
+                                         {% csrf_token %}
+                                         <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+                                         <select class="form-control mb-2 mr-sm-2" id="saving_category_id" name="saving_category_id" required>
+                                                <option value="">--select saving category--</option>
+                                                {% for newsavingcategory in savingcategory %}
+                                                    <option value="{{newsavingcategory.id}}">{{newsavingcategory.saving_category_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <select class="form-control mb-2 mr-sm-2" oninvalid="this.setCustomValidity('Please Select Any Family Member')" oninput="this.setCustomValidity('')" name="family_member_name" id="family_member_name" required>
+                                                <option value="">Select Family Member</option>
+                                                <option value="{{user.username}}">{{user.username}}</option>
+                                                {% for family in user.userfamilymodel_set.all %}
+                                                <option value="{{family.username}}">{{family.username}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <!-- <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Family Member Name" name="family_member_name" id="family_member_name"> -->
+                                            <input type="number" class="form-control mb-2 mr-sm-2" name="saving_per" id="saving_per" oninput="savingcalculateAmount()" placeholder="Savings(%)"> - Or - 
+                                            <input type="number" class="form-control mb-2 mr-sm-2" name="saving_amt" id="saving_amt" oninput="savingcalculatePercentage()" placeholder="Savings(Amount)">
+
+                                            <button type="submit"  class="btn btn-primary mb-2">Add</button>
+                                    </form><br>
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Family Member Name</th>
+                                                    <th scope="col">Saving Category</th>
+                                                    <th scope="col">Saving(%)</th>
+                                                    <th scope="col">Saving(Amount)</th>
+                                                    <th scope="col">Edit</th>
+                                                    <th scope="col">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_savings_table">
+                                            {% if not savingsdata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="3">No Data Available</td>
+                                                     </tr>
+                                            {% else %}
+                                                {% for newsavingsdata in savingsdata %}
+                                                    <tr>
+                                                        <td>{{newsavingsdata.family_member_name}}</td>
+                                                        <td>{{newsavingsdata.saving_category_name}}</td>
+                                                        <td>{{newsavingsdata.saving_per}} %</td>
+                                                        <td>$ {{newsavingsdata.saving_amt}} </td>
+                                                        <td>
+                                                                <button data-saving_id="{{newsavingsdata.id}}" id="edit_saving" type="button"  class="mb-1 btn btn-sm btn-outline-success">
+                                                                    <i  class="fas fa-edit"></i>
+                                                                </button>
+                                                        </td>
+                                                        <td>
+                                                             <form action="{% url 'deletesavings' %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="saving_id" value="{{newsavingsdata.id}}">
+                                                                    <input type="hidden" name="month" value="{{newsavingsdata.month}}">
+                                                                    <button type="submit" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                 {% endfor %}
+                                                         <tr>
+                                                            <td>Total Savings</td>
+                                                            <td></td>
+                                                            <td>{{FinalSavings}} %</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+                        <!--for expensies-->
+                        <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">Add Expenses Datails Here</h4>
+                            </div>
+                            <div class="card-body">
+                                    <form class="form-inline" action="{% url 'insertexpenses' %}" method="POST">
+                                            {% csrf_token %}
+                                          <input type="hidden" name="month_names" id="month_names" value="{{month_name}}">
+                                           <select class="form-control mb-2 mr-sm-2" id="master_category_id" required name="master_category_id" onchange="MastercategoryFunction()">
+                                                <option value="">--select master category--</option>
+                                               {% for newbudget_master_category in budget_master_category %}
+                                                    <option value="{{newbudget_master_category.id}}">{{newbudget_master_category.category_name}}</option>
+                                               {% endfor %}
+                                            </select>
+                                           <span id="category_span">
+                                                 <select class="form-control mb-2 mr-sm-2" id="category" required name="category">
+                                                    <option value="">--select category --</option>
+                                                </select>
+                                           </span>
+                                           <span id="subcategory_span">
+                                                <select class="form-control mb-2 mr-sm-2" id="subcategory" required name="subcategory">
+                                                    <option value="">--select sub category --</option>
+                                                </select>
+                                           </span>
+                                            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Total Expenses (Amount Only)" name="total_expenses" id="total_expenses">
+                                            <input type="checkbox" class="form-control mb-2 mr-sm-2" onclick="checkMe()" name="syncing_fund" id="syncing_fund">Sinking Fund
+                                            <select class="form-control" name="syncing_month" id="syncing_month" style="display: none;">
+                                                <option value="0" selected>no. of months</option>
+                                                <option value="1" >1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
+                                            </select>
+                                            <div style="display: none;" id="syncing_month_checked">
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="January">January
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="February">February
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="March">March
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="April">April
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="May">May
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="June">June
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="July">July
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="August">August
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="September">September
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="October">October
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="November">November
+                                                <input type="checkbox" class="form-check-input" checked name="tets" value="December">December
+                                            </div>
+                                            <button type="submit"  class="btn btn-primary mb-2">Add</button>
+                                    </form><br>
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Master Category</th>
+                                                    <th scope="col">Category</th>
+                                                    <th scope="col">Subcategory</th>
+                                                    <th scope="col">Total Expenses</th>
+                                                    <th scope="col">Edit</th>
+                                                    <th scope="col">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_expense_table">
+                                            {% if not expensedata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="4">No Data Available</td>
+
+                                                    </tr>
+                                            {% else %}
+                                                {% for newexpensedata in expensedata %}
+                                                {% if newexpensedata.syncing_month == 0 %}
+                                                <tr>
+                                                        <td>{{newexpensedata.master_category_name}}</td>
+                                                        <td>{{newexpensedata.category_name}}</td>
+                                                        <td>{{newexpensedata.subcategory_name}}</td>
+                                                        <td>$ {{newexpensedata.total_expenses}}</td>
+                                                        <td>
+                                                            <button type="button" id="edit_expense" data-expense_id="{{newexpensedata.id}}"  class="mb-1 btn btn-sm btn-outline-success">
+                                                                    <i  class="fas fa-edit"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                             <form action="{% url 'deleteexpenses' %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="expense_id" value="{{newexpensedata.id}}">
+                                                                    <input type="hidden" name="month" value="{{newexpensedata.month}}">
+                                                                    <button type="submit" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+
+                                                        {% else %}
+                                                        <tr style="background-color: #4c84ff;color:white;">
+                                                        <td style="color:white;">{{newexpensedata.master_category_name}}</td>
+                                                        <td>{{newexpensedata.category_name}}</td>
+                                                        <td>{{newexpensedata.subcategory_name}}</td>
+                                                        <td>$ {{newexpensedata.total_expenses}} (Sinking)</td>
+                                                        <td>
+                                                            <button type="button" id="edit_expense" data-expense_id="{{newexpensedata.id}}"  class="mb-1 btn btn-sm btn-outline-success">
+                                                                    <i  class="fas fa-edit"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                             <form action="{% url 'deleteexpenses' %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="expense_id" value="{{newexpensedata.id}}">
+                                                                    <input type="hidden" name="month" value="{{newexpensedata.month}}">
+                                                                    <button type="submit" class="mb-1 btn btn-sm btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+
+                                                        {% endif %}
+                                                 {% endfor %}
+                                                     <tr>
+                                                            <td>Total Expenses</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>$ {{FinalExpense}}</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+
+
+
+
+         </div>
+      </div>
+  </div>
+</div>
+
+<script>
+function checkMe(){
+    if ($('#syncing_fund').is(':checked')) {
+        $('#syncing_month').show();
+        $('#syncing_month_checked').show();
+    }else{
+        $('#syncing_month').hide();
+        $('#syncing_month_checked').hide();
+        $("#syncing_month").val($("#syncing_month option:first").val());
+       $('#syncing_month_checked option').prop('selected', true);
+    }
+}
+function calculatePercentage()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#tax_amt').val());
+    var perc=parseInt($('#tax_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(pEarned))
+    {
+        perc="";
+        $('#tax_per').val(""); 
+    }else
+    { 
+        pEarned=((pEarned/pPos) * 100).toFixed(0);
+        $('#tax_per').val(pEarned);            
+    }
+}
+function calculateAmount()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#tax_amt').val());
+    var perc=parseInt($('#tax_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(perc))
+    {
+        perc="";
+        $('#tax_amt').val("");
+    }else
+    {
+        perc = ((perc/100) * pPos).toFixed(0);
+        $('#tax_amt').val(perc);
+    }
+}
+function editcalculatePercentage()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#edit_tax_amt').val());
+    var perc=parseInt($('#edit_tax_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(pEarned))
+    {
+        perc="";
+        $('#edit_tax_per').val(""); 
+    }else
+    { 
+        pEarned=((pEarned/pPos) * 100).toFixed(0);
+        $('#edit_tax_per').val(pEarned);            
+    }
+}
+function editcalculateAmount()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#edit_tax_amt').val());
+    var perc=parseInt($('#edit_tax_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(perc))
+    {
+        perc="";
+        $('#edit_tax_amt').val("");
+    }else
+    {
+        perc = ((perc/100) * pPos).toFixed(0);
+        $('#edit_tax_amt').val(perc);
+    }
+}
+function savingcalculatePercentage()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#saving_amt').val());
+    var perc=parseInt($('#saving_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(pEarned))
+    {
+        alert();
+        perc="";
+        $('#saving_per').val(""); 
+    }else
+    { 
+        pEarned=((pEarned/pPos) * 100).toFixed(0);
+        $('#saving_per').val(pEarned);            
+    }
+}
+function savingcalculateAmount()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#saving_amt').val());
+    var perc=parseInt($('#saving_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(perc))
+    {
+        perc="";
+        $('#saving_amt').val("");
+    }else
+    {
+        perc = ((perc/100) * pPos).toFixed(0);
+        $('#saving_amt').val(perc);
+    }
+}
+function savingeditcalculatePercentage()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#edit_savings_amt').val());
+    var perc=parseInt($('#edit_savings_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(pEarned))
+    {
+        perc="";
+        $('#edit_savings_per').val(""); 
+    }else
+    { 
+        pEarned=((pEarned/pPos) * 100).toFixed(0);
+        $('#edit_savings_per').val(pEarned);            
+    }
+}
+function savingeditcalculateAmount()
+{
+    var pPos = parseInt($('#total').val()); 
+    var pEarned = parseInt($('#edit_savings_amt').val());
+    var perc=parseInt($('#edit_savings_per').val());
+    var pAmt = 0;
+    if(isNaN(pPos) || isNaN(perc))
+    {
+        perc="";
+        $('#edit_savings_amt').val("");
+    }else
+    {
+        perc = ((perc/100) * pPos).toFixed(0);
+        $('#edit_savings_amt').val(perc);
+    }
+}
+
+function updateGoal(pk){
+    var newgoal=$("#newgoal").val();
+    var goalamount=$("#goalamount").val();
+    var goalstartdate=$("#goal_start_date").val();
+    var goalenddate=$("#goal_end_date").val();
+
+    $.ajax({
+            url: '/monthlyexpenses/updategoal',
+            method: 'POST',
+            data: {
+                'goal' : pk,
+                'newgoal' : newgoal,
+                'goalamount' : goalamount,
+                'goalstartdate' : goalstartdate,
+                'goalenddate' : goalenddate,
+                 csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(result)
+            {
+                $("#income_edit_model").modal('toggle');
+                Swal.fire(
+                  'goal data updated',
+                  '',
+                  'success'
+                ).then((value) => {
+                    location.reload();
+                });
+            }
+        });
+}
+</script>
+<script>
+function editGoal(id){
+   $.ajax({
+            url: '/monthlyexpenses/editgoal',
+            method: 'POST',
+            data: {
+                'id' : id,
+                 csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(result)
+            {
+                $("#dynamic_income_form_body").empty();
+                $("#dynamic_income_form_body").append(result);
+                $("#income_edit_model").modal('toggle');
+            }
+   });
+}
+function deleteGoal(id){
+
+    if (confirm("are you sure you want to delete ?")){
+        document.getElementById("submit_goal-"+id).click();
+    }
+}
+</script>
+<!-- for income-->
+<div class="modal fade" id="income_edit_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalFormTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalFormTitle">Edit Income Data </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dynamic_income_form_body">
+                <form>
+                    <div class="form-group">
+                        <label>Name </label>
+                        
+                        <input type="text" class="form-control" id="name"  name="name" placeholder="Family Member Name asdf">
+                    </div>
+                    <div class="form-group">
+                        <label>Income</label>
+                        <input type="text" name="income" class="form-control" id="income" placeholder="Income" >
+                        <select id="income_category_in" name="income_category_in"></select>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- for tax-->
+<div class="modal fade" id="tax_edit_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalFormTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalFormTitle">Edit Tax Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dynamic_tax_form_body">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--for savings-->
+<div class="modal fade" id="savings_edit_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalFormTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalFormTitle">Edit Savings Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dynamic_savings_form_body">
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- for expense data-->
+<div class="modal fade" id="expense_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalFormTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalFormTitle">Edit Savings Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dynamic_expense_body">
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}

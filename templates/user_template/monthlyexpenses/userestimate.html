@@ -1,0 +1,341 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Estimate {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+                    <div class="col-lg-12">
+                       <div class="card card-default">
+                          <div class="card-header card-header-border-bottom">
+                             <h2>Total Estimate Expense</h2>
+                          </div>
+                          <table class="table table-bordered" style="width:100%">
+                                <thead>
+                                   <tr>
+                                         <th scope="col">#</th>
+                                       {% for newmonthdata in monthdata %}
+                                         <th scope="col">{{newmonthdata.month_name}}</th>
+                                       {% endfor %}
+                                   </tr>
+                                </thead>
+                                <tbody>
+                                   <tr>
+                                      <td scope="row">Total Income</td>
+                                        {% for newmonthdata in monthdata %}
+                                      <td>{{newmonthdata.total_income}}</td>
+                                       {% endfor %}
+                                   </tr>
+                                   <tr>
+                                      <td scope="row">Total Tax</td>
+                                       {% for newmonthdata in monthdata %}
+                                      <td>{{newmonthdata.total_tax}}</td>
+                                      {% endfor %}
+                                   </tr>
+                                   <tr>
+                                       <td scope="row">Total Savings</td>
+                                       {% for newmonthdata in monthdata %}
+                                       <td>{{newmonthdata.total_savings}}</td>
+                                      {% endfor %}
+                                   </tr>
+                                   <tr>
+                                      <td scope="row">Total Expense</td>
+                                        {% for newmonthdata in monthdata %}
+                                        <td>{{newmonthdata.total_expanse}}</td>
+                                       {% endfor %}
+                                   </tr>
+                                </tbody>
+                          </table>
+
+                       </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                       <div class="card card-default">
+                          <div class="card-header card-header-border-bottom">
+                             <h2>Add Income Details</h2>
+                          </div>
+                          <div class="card-body" style="overflow: auto;">
+                            <form class="form-inline" method="POST" action="{% url 'addincome'%} ">
+                                   {% csrf_token %}
+                                   <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Name" required name="name" id="name">
+                                   <select class="form-control mb-2 mr-sm-2" id="month" name="month">
+                                        <option>--select month--</option>
+                                         {% for newtotalmonths in totalmonths %}
+                                          <option value="{{newtotalmonths}}">{{newtotalmonths}}</option>
+                                          {% endfor %}
+                                   </select>
+                                    <input type="text" class="form-control mb-2 mr-sm-2" placeholder="income" required name="income" id="income">
+                                    <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                            </form>
+                            <br>
+                            <table class="table table-bordered" id="income_table" style="width:100%">
+                                <thead>
+                                   <tr>
+
+                                          <th scope="col">Name</th>
+                                       {% for newtotalmonths in totalmonths %}
+                                         <th scope="col">{{newtotalmonths}}</th>
+                                       {% endfor %}
+                                   </tr>
+                                </thead>
+                                <tbody id="dynamic_income_body">
+                                    {% for newincomearray in incomearray %}
+                                       <tr>
+                                           <td scope="row">
+                                               <input type="text" class="form-control mb-2 mr-sm-2" value="{{newincomearray.name}}"   placeholder="name">
+                                           </td>
+                                            {% for newtotalmonths in totalmonths %}
+                                                 <td>
+                                                      {% for singleincome in newincomearray.income%}
+                                                             {% if newtotalmonths == singleincome.month %}
+                                                                    <input type="text" class="form-control mb-2 mr-sm-2 income" oninput="UpdateincomeFunction({{singleincome.id}})" value="{{singleincome.income}}" placeholder="income" name="income" id="income{{singleincome.id}}">
+                                                              {% endif %}
+                                                     {% endfor %}
+                                                 </td>
+
+                                            {% endfor %}
+                                       </tr>
+                                    {% endfor %}
+                                </tbody>
+                             </table>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                       <div class="card card-default">
+                          <div class="card-header card-header-border-bottom">
+                             <h2>Add Tax Details</h2>
+                          </div>
+                          <div class="card-body" style="overflow: auto;">
+                            <form class="form-inline" method="POST" action="{% url 'insert_tax' %} ">
+                                  {% csrf_token %}
+                                  <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Name" required name="tax_member_name" id="tax_member_name">
+                                  <select class="form-control mb-2 mr-sm-2" required id="tax_category" name="tax_category">
+                                        <option>--select category--</option>
+                                         {% for newtaxcategory in taxcategory %}
+                                          <option value="{{newtaxcategory.id}}">{{newtaxcategory.tax_category_name}}</option>
+                                          {% endfor %}
+                                   </select>
+                                   <select class="form-control mb-2 mr-sm-2" required id="tax_month" name="tax_month">
+                                        <option>--select month--</option>
+                                         {% for newtotalmonths in totalmonths %}
+                                          <option value="{{newtotalmonths}}">{{newtotalmonths}}</option>
+                                          {% endfor %}
+                                   </select>
+                                   <input type="text" class="form-control mb-2 mr-sm-2" required placeholder="tax (%)" name="tax_per" id="tax_per">
+                                   <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                            </form>
+                            <br>
+                            <table class="table table-bordered" id="income_table" style="width:100%">
+                                <thead>
+                                   <tr>
+                                        <th scope="col">Name</th>
+                                       {% for newtotalmonths in totalmonths %}
+                                         <th scope="col">{{newtotalmonths}}</th>
+                                       {% endfor %}
+                                   </tr>
+                                </thead>
+                                <tbody id="dynamic_income_body">
+                                    {% for newtaxarray in taxarray %}
+                                       <tr>
+                                           <td scope="row">
+                                               <input type="text" class="form-control mb-2 mr-sm-2" value="{{newtaxarray.member_name}}"  placeholder="name" name="name">
+                                           </td>
+                                            {% for newtotalmonths in totalmonths %}
+                                                     <td>
+                                                         {% for singletax in newtaxarray.tax%}
+                                                             {% if newtotalmonths == singletax.month %}
+                                                                  <select class="form-control mb-2 mr-sm-2" id="tax_category{{singletax.id}}" onchange="ChangetaxFunction({{singletax.id}})" name="tax_category">
+                                                                              <option>--category--</option>
+                                                                             {% for newtaxcategory in taxcategory %}
+                                                                              <option value="{{newtaxcategory.id}}" {% if singletax.tax_category_id == newtaxcategory.id %} selected {% endif %}>{{newtaxcategory.tax_category_name}}</option>
+                                                                              {% endfor %}
+                                                                  </select>
+                                                                  <input type="text" class="form-control mb-2 mr-sm-2 income" oninput="TaxperFunction({{singletax.id}})" value="{{singletax.tax_per}}" id="tax_per{{singletax.id}}" placeholder="tax per" name="tax_per">
+                                                             {% endif %}
+                                                         {% endfor %}
+                                                     </td>
+
+
+                                            {% endfor %}
+                                       </tr>
+                                    {% endfor %}
+                                </tbody>
+                             </table>
+                          </div>
+                       </div>
+                    </div>
+
+
+                    <div class="col-lg-12">
+                       <div class="card card-default">
+                          <div class="card-header card-header-border-bottom">
+                             <h2>Add Savings Datails</h2>
+                          </div>
+                          <div class="card-body" style="overflow: auto;">
+                            <form class="form-inline" method="POST" action="{% url 'insert_savings' %} ">
+                                  {% csrf_token %}
+                                  <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Name" required name="family_member_name" id="family_member_name">
+                                  <select class="form-control mb-2 mr-sm-2" required id="saving_category" name="saving_category">
+                                        <option>--select category--</option>
+                                         {% for newsavingscategory in savingscategory %}
+                                          <option value="{{newsavingscategory.id}}">{{newsavingscategory.saving_category_name}}</option>
+                                          {% endfor %}
+                                   </select>
+                                   <select class="form-control mb-2 mr-sm-2" required id="saving_month" name="saving_month">
+                                        <option>--select month--</option>
+                                         {% for newtotalmonths in totalmonths %}
+                                          <option value="{{newtotalmonths}}">{{newtotalmonths}}</option>
+                                          {% endfor %}
+                                   </select>
+                                   <input type="text" class="form-control mb-2 mr-sm-2" required placeholder="savings (%)" name="saving_per" id="saving_per">
+                                   <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                            </form>
+                            <br>
+                            <table class="table table-bordered" id="income_table" style="width:100%">
+                                <thead>
+                                   <tr>
+                                        <th scope="col">Name</th>
+                                       {% for newtotalmonths in totalmonths %}
+                                         <th scope="col">{{newtotalmonths}}</th>
+                                       {% endfor %}
+                                   </tr>
+                                </thead>
+                                <tbody id="dynamic_income_body">
+                                    {% for newsavingsarray in savingsarray %}
+                                       <tr>
+                                           <td scope="row">
+                                               <input type="text" class="form-control mb-2 mr-sm-2" value="{{newsavingsarray.family_member_name}}"  placeholder="family_member_name" name="family_member_name">
+                                           </td>
+                                            {% for newtotalmonths in totalmonths %}
+                                                     <td>
+                                                         {% for singlesavings in newsavingsarray.savings %}
+                                                             {% if newtotalmonths == singlesavings.month %}
+                                                                  <select class="form-control mb-2 mr-sm-2" id="saving_category_id{{singlesavings.id}}" onchange="ChangesavingsFunction({{singlesavings.id}})" name="saving_category_id">
+                                                                      <option>--category--</option>
+                                                                     {% for newsavingscategory in savingscategory %}
+                                                                      <option value="{{newsavingscategory.id}}" {% if singlesavings.saving_category_id == newsavingscategory.id %} selected {% endif %}>{{newsavingscategory.saving_category_name}}</option>
+                                                                      {% endfor %}
+                                                                  </select>
+                                                                  <input type="text" class="form-control mb-2 mr-sm-2 income"  oninput="UpdatesavingperFunction({{singlesavings.id}})" value="{{singlesavings.saving_per}}"  placeholder="saving per" name="saving_per" id="saving_per{{singlesavings.id}}">
+                                                             {% endif %}
+                                                         {% endfor %}
+                                                     </td>
+                                            {% endfor %}
+                                       </tr>
+                                    {% endfor %}
+                                </tbody>
+                             </table>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                       <div class="card card-default">
+                          <div class="card-header card-header-border-bottom">
+                             <h2>Add Expenses Datails</h2>
+                          </div>
+                          <div class="card-body" style="overflow: auto;">
+                            <form class="form-inline" method="POST" action="{% url 'insert_expense' %} ">
+                                  {% csrf_token %}
+                                  <select class="form-control mb-2 mr-sm-2" required id="master_category_id" onchange="MastercategoryFunction()" name="master_category_id">
+                                        <option>--master category--</option>
+                                         {% for newbudgetmastercategory in budgetmastercategory %}
+                                          <option value="{{newbudgetmastercategory.id}}">{{newbudgetmastercategory.category_name}}</option>
+                                          {% endfor %}
+                                   </select>
+                                  <span id="category_span">
+                                   <select class="form-control mb-2 mr-sm-2" required id="category_id" name="category_id">
+                                        <option>--category--</option>
+                                   </select>
+                                  </span>
+                                  <span id="subcategory_span">
+                                      <select class="form-control mb-2 mr-sm-2" required id="subcategory_id" name="subcategory_id">
+                                            <option>--subcategory--</option>
+                                       </select>
+                                  </span>
+                                   <select class="form-control mb-2 mr-sm-2" required id="expense_month" name="expense_month">
+                                        <option>--month--</option>
+                                         {% for newtotalmonths in totalmonths %}
+                                          <option value="{{newtotalmonths}}">{{newtotalmonths}}</option>
+                                          {% endfor %}
+                                   </select>
+                                   <input type="text" class="form-control mb-2 mr-sm-2" required placeholder="expense" name="total_expenses" id="total_expenses">
+                                   <button type="submit"  class="btn btn-primary mb-2">ADD</button>
+                            </form><br>
+                            <table class="table table-bordered" id="income_table" style="width:100%">
+                                <thead>
+                                   <tr>
+                                       {% for newtotalmonths in totalmonths %}
+                                         <th scope="col">{{newtotalmonths}}</th>
+                                       {% endfor %}
+                                   </tr>
+                                </thead>
+                                <tbody id="dynamic_income_body">
+                                    {% for newexpensearray in expensearray %}
+                                       <tr>
+                                            {% for newtotalmonths in totalmonths %}
+                                                     <td>
+                                                         {% for singleexpense in newexpensearray.expense %}
+                                                             {% if newtotalmonths == singleexpense.month %}
+                                                                <div style="border:1px solid;">
+                                                                  <select class="form-control mb-2 mr-sm-2" id="master_category_id"  name="master_category_id">
+                                                                      <option>--master category--</option>
+                                                                     {% for newbudgetmastercategory in budgetmastercategory %}
+                                                                      <option value="{{newbudgetmastercategory.id}}" {% if singleexpense.master_category_id == newbudgetmastercategory.id %} selected {% endif %}>{{newbudgetmastercategory.category_name}}</option>
+                                                                      {% endfor %}
+                                                                  </select>
+                                                                   <select class="form-control mb-2 mr-sm-2" id="category_id"  name="category_id">
+                                                                      <option>--category--</option>
+                                                                     {% for newbudgetcategory in budgetcategory %}
+                                                                      <option value="{{newbudgetcategory.id}}" {% if singleexpense.category_id == newbudgetcategory.id %} selected {% endif %}>{{newbudgetcategory.subcategory_name}}</option>
+                                                                      {% endfor %}
+                                                                  </select>
+                                                                   <select class="form-control mb-2 mr-sm-2" id="subcategory_id"  name="subcategory_id">
+                                                                      <option>--category--</option>
+                                                                     {% for newbudgetsubcategory in budgetsubcategory %}
+                                                                      <option value="{{newbudgetsubcategory.id}}" {% if singleexpense.subcategory_id == newbudgetsubcategory.id %} selected {% endif %}>{{newbudgetsubcategory.last_category_name}}</option>
+                                                                      {% endfor %}
+                                                                  </select>
+                                                                  <input type="text" class="form-control mb-2 mr-sm-2 income" value="{{singleexpense.total_expenses}}" placeholder="expense" name="total_expenses" id="total_expenses">
+                                                                </div><br>
+                                                             {% endif %}
+                                                         {% endfor %}
+                                                     </td>
+                                            {% endfor %}
+                                       </tr>
+                                    {% endfor %}
+                                </tbody>
+                             </table>
+
+                          </div>
+                       </div>
+                    </div>
+
+
+
+
+
+
+
+
+         </div>
+      </div>
+    </div>
+</div>
+{% endblock content %}

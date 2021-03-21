@@ -1,0 +1,46 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Edit Master Categories {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Edit Master Categories </h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'update_master_categories' %}" enctype="multipart/form-data">
+                      <input type="hidden" name="master_hidden_id" value="{{master_category.id}}">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Category Name :</label>
+						<input type="text" name="category_name" value="{{master_category.category_name}}" required id="category_name" class="form-control" placeholder="Category Name">
+                      </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">UPDATE</button>
+                        <a href="{% url 'adminbudgetcategories' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}

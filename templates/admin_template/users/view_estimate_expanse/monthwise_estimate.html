@@ -1,0 +1,208 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Month Wise Estimate Expanse {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+                         <!--for Income Details-->
+                        <div class="alert alert-primary alert-highlighted" role="alert">
+                            {{userdata.username}}'s Estimation for <span class="badge badge-secondary">{{month_name}}</span>
+						</div>
+
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">{{userdata.username}}'s Income Datails:</h4>
+                            </div>
+                            <div class="card-body">
+                                        <table class="table">
+												<thead>
+													<tr>
+														<th scope="col">Family Member Name</th>
+														<th scope="col">Income</th>
+													</tr>
+												</thead>
+												<tbody id="dynamic_income_table">
+                                                {% if not incomedata %}
+                                                         <tr>
+                                                            <td></td>
+                                                            <td colspan="2">No Data Available</td>
+                                                         </tr>
+                                                {% else %}
+                                                    {% for newincomedata in incomedata %}
+                                                        <tr>
+                                                            <td>{{newincomedata.name}}</td>
+                                                            <td>$ {{newincomedata.income}}</td>
+
+                                                        </tr>
+                                                     {% endfor %}
+                                                        <tr>
+                                                            <td>Total Income</td>
+                                                            <td>$ {{FinalIncome}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Tax Included Income</td>
+                                                            <td>$ {{Taxincluded_FinalTotal}}</td>
+                                                        </tr>
+
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                </div>
+                        </div>
+
+
+
+
+                         <!--------for tax--------------------->
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">{{userdata.username}}'s Tax Datails:</h4>
+                            </div>
+                            <div class="card-body">
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Family Member Name</th>
+                                                    <th scope="col">Tax Category</th>
+                                                    <th scope="col">Tax(%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_tax_table">
+                                            {% if not taxdata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="3">No Data Available</td>
+                                                    </tr>
+                                            {% else %}
+                                                {% for newtaxdata in taxdata %}
+                                                    <tr>
+                                                        <td>{{newtaxdata.member_name}}</td>
+                                                        <td>{{newtaxdata.tax_category_name}}</td>
+                                                        <td>{{newtaxdata.tax_per}}%</td>
+                                                    </tr>
+                                                 {% endfor %}
+                                                    <tr>
+                                                            <td>Total Tax</td>
+                                                            <td></td>
+                                                            <td>{{FinalTax}} %</td>
+                                                    </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+
+                        <!--------for Savings--------------------->
+                         <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">{{userdata.username}}'s Savings Datails:</h4>
+                            </div>
+                            <div class="card-body">
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Family Member Name</th>
+                                                    <th scope="col">Saving Category</th>
+                                                    <th scope="col">Saving(%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_savings_table">
+                                            {% if not savingsdata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="3">No Data Available</td>
+                                                     </tr>
+                                            {% else %}
+                                                {% for newsavingsdata in savingsdata %}
+                                                    <tr>
+                                                        <td>{{newsavingsdata.family_member_name}}</td>
+                                                        <td>{{newsavingsdata.saving_category_name}}</td>
+                                                        <td>{{newsavingsdata.saving_per}} %</td>
+                                                    </tr>
+                                                 {% endfor %}
+                                                         <tr>
+                                                            <td>Total Savings</td>
+                                                            <td></td>
+                                                            <td>{{FinalSavings}} %</td>
+                                                        </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+                        <!--for expensies-->
+                        <div class="card card-default">
+                            <div class="card-header card-header-border-bottom">
+                                <h4 style="color: #4c84ff">{{userdata.username}}'s Expenses Datails:</h4>
+                            </div>
+                            <div class="card-body">
+                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Master Category</th>
+                                                    <th scope="col">Category</th>
+                                                    <th scope="col">Subcategory</th>
+                                                    <th scope="col">Total Expenses</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dynamic_expense_table">
+                                            {% if not expensedata %}
+                                                     <tr>
+                                                        <td></td>
+                                                        <td colspan="4">No Data Available</td>
+
+                                                    </tr>
+                                            {% else %}
+                                                {% for newexpensedata in expensedata %}
+                                                    <tr>
+                                                        <td>{{newexpensedata.master_category_name}}</td>
+                                                        <td>{{newexpensedata.category_name}}</td>
+                                                        <td>{{newexpensedata.subcategory_name}}</td>
+                                                        <td>$ {{newexpensedata.total_expenses}}</td>
+                                                    </tr>
+                                                 {% endfor %}
+                                                     <tr>
+                                                            <td>Total Expenses</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>$ {{FinalExpense}}</td>
+                                                        </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                </div>
+                        </div>
+
+                        <a href="{% url 'adminusers' %}" style="float: right;" type="button" class="mb-1 btn btn-primary">BACK</a>
+
+
+
+
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock content %}

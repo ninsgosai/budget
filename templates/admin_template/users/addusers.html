@@ -1,0 +1,119 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Add Users {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Users Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'addusers' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Select Subadmin:</label>
+						<select class="form-control" name="subadmin_id" id="subadmin_id">
+                             <option selected value="">--select subadmin--</option>
+                            {% for newsubadmindata in subadmindata %}
+                            <option value="{{newsubadmindata.id}}" >{{newsubadmindata.subadmin_name}}</option>
+                            {% endfor %}
+                        </select>
+                          <p>leave blank if you don't want to assign subadmin</p>
+                     </div>
+                      <div class="form-group">
+                        <label>Client First Name :</label>
+						<input type="text" name="username" required id="username" class="form-control" placeholder="First Name">
+                      </div>
+                      <div class="form-group">
+                        <label>Client Last Name :</label>
+						<input type="text" name="lastname" required id="lastname" class="form-control" placeholder="Last Name">
+                      </div>
+                      <div class="form-group">
+                        <label>Client BirthDate :</label>
+						<input type="date" name="age" required id="age" class="form-control" placeholder="Age (only numbers allowed)">
+                      </div>
+                      <div class="form-group">
+                        <label>Gender:</label>
+						<select class="form-control" name="gender" id="gender">
+                            <option selected >--select gender--</option>
+                            <option value="male" >Male</option>
+                            <option value="female" >Female</option>
+                            <option value="other" >Other</option>
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Client Email :</label>
+						<input type="text" name="email" required id="email" class="form-control" placeholder="Email">
+                      </div>
+                      <div class="form-group">
+                        <label>Password :</label>
+						<input type="text" name="password" required id="password" class="form-control" placeholder="Password">
+                      </div>
+                       <div class="form-group">
+                        <label>Mobile Number :</label>
+						<input type="text"  name="mobile" required id="mobile" class="form-control" placeholder="Mobile  (only numbers allowed)">
+                       </div>
+                       <div class="form-group">
+                        <label>Address :</label>
+                          <textarea class="form-control"  placeholder="Address" name="address" id="address"></textarea>
+                       </div>
+                      {% comment %} <div class="form-group">
+                        <label>Goal :</label>
+                          <textarea class="form-control"  placeholder="Goal" name="goal" id="goal"></textarea>
+                       </div> {% endcomment %}
+                       <div class="form-group">
+                        <label>Service Subscription Time (from) :</label>
+                          <input type="date" class="form-control" onchange="checkdate()" placeholder="Time Period in Months  (only numbers allowed)" name="subscription_from_time" id="subscription_from_time">
+                       </div>
+                      <div class="form-group">
+                        <label>Service Subscription Time (to):</label>
+                          <input type="date" class="form-control" onchange="checkdate()" placeholder="Time Period in Months  (only numbers allowed)" name="subscription_to_time" id="subscription_to_time">
+                       </div>
+                      <div class="form-group">
+                        <label>Select Income Categories:</label>
+                          <select id="income_categories" class="form-control" name="income_categories" multiple>
+                            {% for categories in income_category %}
+                              <option value="{{categories.income_category_name}}">{{categories.income_category_name}}</option>
+                            {% endfor %}
+                          </select>
+                       </div>
+                       <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">ADD</button>
+                        <a href="{% url 'adminusers' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+<script>
+  function checkdate(){
+    var from = document.getElementById('subscription_from_time').value;
+    var to = document.getElementById('subscription_to_time').value;
+    if ( from && to && from > to ){
+      alert("From date can not be more than to date");
+      document.getElementById('subscription_from_time').value = "";
+      document.getElementById('subscription_to_time').value = "";
+    }
+  }
+</script>
+{% endblock content %}

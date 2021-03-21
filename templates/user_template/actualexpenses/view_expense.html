@@ -1,0 +1,123 @@
+{% extends "user_template/base.html" %}
+{% block page_title %}View Expenses {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                   <h2>Expense for <span class="badge badge-secondary">{{month}}</span></h2>
+                  <a href="{% url 'add_actualexpenses' month=month %}"  title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">Add Expenses</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+
+                  <div class="basic-data-table">
+                        <table id="basic-data-table" class="table nowrap" style="width:100%">
+                                        <thead>
+                                           <tr>
+                                              <th>Sl No</th>
+                                              <th>Type</th>
+                                              <th>Master Category</th>
+                                              <th>Category</th>
+                                              <th>Subcategory</th>
+                                              <th>Amount</th>
+                                              <th>Expense Date</th>
+                                              <!--<th>Edit</th>-->
+                                              <th>Delete</th>
+                                           </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for newactualexpensedata in actualexpensedata %}
+                                            {% if newactualexpensedata.syncing_month == 0 %}
+                                               <tr>
+                                                  <td>{{ forloop.counter }}</td>
+                                                  <td>{{newactualexpensedata.type}}</td>
+                                                  <td>{{newactualexpensedata.master_category}}</td>
+                                                  <td>{{newactualexpensedata.category_name}}</td>
+                                                  <td>{{newactualexpensedata.subcategory_name}}</td>
+                                                  <td>${{newactualexpensedata.actual_expense}}</td>
+                                                  <td>{{newactualexpensedata.expense_date}}</td>
+                                                  <!--<td>
+                                                       <form method="POST" action="#">
+                                                           <button type="button"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                                       </form>
+                                                  </td>-->
+                                                  <td>
+                                                    <i data-expense_id="{{newactualexpensedata.id}}" data-month_name="{{newactualexpensedata.is_month}}" id="delete_expense" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                                  </td>
+                                               </tr>
+                                            {% else %}
+                                            <tr style="background-color: #4c84ff;color:white;">
+                                                  <td>{{ forloop.counter }}</td>
+                                                  <td>{{newactualexpensedata.type}}</td>
+                                                  <td>{{newactualexpensedata.master_category}}</td>
+                                                  <td>{{newactualexpensedata.category_name}}</td>
+                                                  <td>{{newactualexpensedata.subcategory_name}}</td>
+                                                  <td>${{newactualexpensedata.actual_expense}} (Sinking)</td>
+                                                  <td>{{newactualexpensedata.expense_date}}</td>
+                                                  <!--<td>
+                                                       <form method="POST" action="#">
+                                                           <button type="button"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                                       </form>
+                                                  </td>-->
+                                                  <td>
+                                                    <i data-expense_id="{{newactualexpensedata.id}}" data-month_name="{{newactualexpensedata.is_month}}" id="delete_expense" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                                  </td>
+                                               </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                     </table>
+
+                  </div>
+
+               </div>
+            </div>
+
+            <div style="float: right;">
+                <a href="{% url 'actualexpenses' %}" class="mb-1 btn btn-primary">BACK</a>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="expense_delete_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'deleteexpense'%}">
+                    {% csrf_token %}
+                    <input type="hidden" name="expenseid" id="expenseid">
+                    <input type="hidden" name="month_name" id="month_name">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

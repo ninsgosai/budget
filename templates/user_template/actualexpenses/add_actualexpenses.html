@@ -1,0 +1,273 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Actual Expenses {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+              {% if bankaccounts %}
+                   <div class="card card-default">
+                      <div class="card-header card-header-border-bottom">
+                          <h2>Your Bank Account Details - </h2> <br>
+                      </div>
+                      
+                      <div class="card-body">
+                          <table class="table">
+                          <thead>
+                            <td>Bank</td>
+                            <td>Account no.</td>
+                            <td>Balance</td>
+                            <td>Update Balance</td>
+                          </thead>
+                          <tbody>
+                          {% for account in bankaccounts %}
+                          <tr>
+                            <td>{{account.bank_name}}</td>
+                            <td>XXXXXXXXXXXX{{account.account_number}}</td>
+                            <td> ${{account.current_balance}}</td>
+                            <td>
+                            <button class="btn btn-primary" onclick="editData({{account.id}})">Update AC balance</button></td>
+                          </td></tr>
+                          {% endfor %}
+                          
+                            </tbody>
+                          </table>
+                      </div>
+                  </div>
+               {% endif %}
+              {% if creditcards %}
+                   <div class="card card-default">
+                      <div class="card-header card-header-border-bottom">
+                          <h2>Your Credit Card Details - </h2> <br>
+                      </div>
+                      
+                      <div class="card-body">
+                          <table class="table">
+                          <thead>
+                            <td>Credit Card</td>
+                            <td>Credit Limit.</td>
+                            <td>Update Balance</td>
+                          </thead>
+                          <tbody>
+                          {% for account in creditcards %}
+                          <tr>
+                            <td>XXXX XXXX XXXX {{account.credit_card_number}}</td>
+                            <td>${{account.credit_limit}}</td>
+                            <td><button class="btn btn-primary" onclick="editCreditData({{account.id}})">Update Credit Card balance</button></td>
+                          </td></tr>
+                          {% endfor %}
+                          
+                            </tbody>
+                          </table>
+                      </div>
+                  </div>
+               {% endif %}
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Actual Expenses for month -  <span class="badge badge-secondary">{{month}}</span> </h2> <br>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{% url 'inertexpense'%}" enctype="multipart/form-data">
+                      <input type="hidden" name="is_month" value="{{month}}">
+                      {% csrf_token %}
+                              <div class="form-group">
+                                <label>Select  Category:</label>
+                                <select class="form-control" id="payment_category" onchange="PaymentCategoryFunction()" name="payment_category">
+                                    <option value="" >--select payment category--</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label>Select Payment Type:</label>
+                                <select class="form-control" id="payment_type" name="payment_type" onchange="PaymentTypeFunction()">
+                                    <option value="" >--select payment type--</option>
+                                    <option value="bank">Bank</option>
+                                    <option value="credit">Credit</option>
+                                    <option value="cash">Cash</option>
+                                </select>
+                              </div>
+                              <span id="bank_span"  style="display:none;">
+                                  <div class="form-group">
+                                    <label>Select Bank Account:</label>
+                                    <select class="form-control" id="bank_account_number" name="bank_account_number">
+                                        <option value="" >--select bank account number--</option>
+                                        {% for newbankaccounts in bankaccounts%}
+                                        <option value="{{newbankaccounts.account_number}}">xxxx xxxx xxxx {{newbankaccounts.account_number}}</option>
+                                        {% endfor %}
+                                    </select>
+                                  </div>
+                              </span>
+                              <span id="credit_span" style="display:none;">
+                                  <div class="form-group">
+                                    <label>Select Credit Account:</label>
+                                    <select class="form-control" id="credit_account_number" name="credit_account_number">
+                                        <option value="" >--select credit card number--</option>
+                                        {% for newcreditcards in creditcards %}
+                                        <option value="{{newcreditcards.credit_card_number}}">{{newcreditcards.credit_card_number}}</option>
+                                        {% endfor %}
+                                    </select>
+                                  </div>
+                              </span>
+                              <span id="dynamic_expense_span">
+                                   <div class="form-group">
+                                    <label>Select Master Category:</label>
+                                    <select class="form-control" id="actual_master_category" name="actual_master_category_id" onchange="MasterCategoryFunction()">
+                                        <option value="" >--select master category--</option>
+                                        {% for newmastercategory in mastercategory %}
+                                        <option value="{{newmastercategory.id}}">{{newmastercategory.category_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                  </div>
+                                   <div class="form-group">
+                                    <label>Select  Category:</label>
+                                        <span id="category_span">
+                                            <select class="form-control" id="actual_category" name="actual_category">
+                                                    <option value="" >--select master category first--</option>
+                                            </select>
+                                        </span>
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Select Subcategory:</label>
+                                      <span id="subcategory_span">
+                                        <select class="form-control" id="actual_subcategory" name="actual_subcategory">
+                                            <option value="" >--select subcategory--</option>
+                                        </select>
+                                      </span>
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Expense:</label>
+                                    <input type="text" name="actual_expense"  id="actual_expense" class="form-control" placeholder="Expense">
+                                  </div>
+                                  <div class="form-group">
+                                  <input type="checkbox" onclick="checkMe()" name="syncing_fund" id="syncing_fund">Sinking Fund
+                                            <select class="form-control col-md-3" name="syncing_month" id="syncing_month" style="display: none;">
+                                                <option value="0" selected>Select no. of months</option>
+                                                <option value="1" >1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
+                                            </select>
+                                            <div style="display: none;" id="syncing_month_checked">
+                                                <input type="checkbox" checked name="tets" value="January">January
+                                                <input type="checkbox" checked name="tets" value="February">February
+                                                <input type="checkbox" checked name="tets" value="March">March
+                                                <input type="checkbox" checked name="tets" value="April">April
+                                                <input type="checkbox" checked name="tets" value="May">May
+                                                <input type="checkbox" checked name="tets" value="June">June
+                                                <input type="checkbox" checked name="tets" value="July">July
+                                                <input type="checkbox" checked name="tets" value="August">August
+                                                <input type="checkbox" checked name="tets" value="September">September
+                                                <input type="checkbox" checked name="tets" value="October">October
+                                                <input type="checkbox" checked name="tets" value="November">November
+                                                <input type="checkbox" checked name="tets" value="December">December
+                                            </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Expense Date:</label>
+                                    <input type="date" name="actual_expense_date"  id="actual_expense_date" class="form-control" placeholder="Expense Date">
+                                  </div>
+                              </span>
+                              <span id="dynamic_income_span">
+                                  <div class="form-group">
+                                        <label>Enter Amount:</label>
+                                        <input type="text" name="actual_income"  id="actual_income" class="form-control" placeholder="Enter Amount">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Income Date:</label>
+                                    <input type="date" name="actual_income_date"  id="actual_income_date" class="form-control" placeholder="Income Date">
+                                  </div>
+                              </span>
+
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">ADD</button>
+                        <a href="{% url 'view_expense'  month=month %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+
+
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+{% comment %} MODELS  {% endcomment %}
+
+<div class="modal fade" id="account_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalFormTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalFormTitle">Edit Savings Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dynamic_account_body">
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% comment %} MODELS {% endcomment %}
+
+<script>
+function checkMe(){
+    if ($('#syncing_fund').is(':checked')) {
+        $('#syncing_month').show();
+        $('#syncing_month_checked').show();
+    }else{
+        $('#syncing_month').hide();
+        $('#syncing_month_checked').hide();
+        $("#syncing_month").val($("#syncing_month option:first").val());
+       $('#syncing_month_checked option').prop('selected', true);
+    }
+}
+function editData(id){
+  $.ajax({
+      url: '/adminusers/editaccount',
+      method: 'POST',
+      data: {
+          'id' : id,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+      },
+      success:function(result)
+      {
+          $("#dynamic_account_body").empty();
+          $("#dynamic_account_body").append(result);
+          $("#account_modal").modal('toggle');
+      }
+   });
+}
+function editCreditData(id){
+  alert(id);
+}
+</script>
+{% endblock content %}

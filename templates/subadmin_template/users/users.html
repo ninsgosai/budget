@@ -1,0 +1,95 @@
+{% extends "subadmin_template/base.html" %}
+{% block page_title %} Users {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                  <h2>Users</h2>
+                  <a href="{% url 'add_users' %}"  title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">+</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+                  <div class="basic-data-table">
+                     <table id="basic-data-table" class="table nowrap" style="width:100%">
+                        <thead>
+                           <tr>
+                              <th>Sl No</th>
+                              <th>Client Name</th>
+                              <th>Age</th>
+                              <th>Email</th>
+                              <th>Mobile</th>
+                              <th>Estimate Expanse</th>
+                              <th>Edit</th>
+                              <th>Delete</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for newsubadminusers in subadminusers %}
+                               <tr>
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{newsubadminusers.username}}</td>
+                                  <td>{{newsubadminusers.age}}</td>
+                                  <td>{{newsubadminusers.email}}</td>
+                                  <td>{{newsubadminusers.mobile}}</td>
+                                  <td><a href="{% url 'subadmin_view_estimate_expanse' id=newsubadminusers.id %}" title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">view</a></td>
+                                  <td>
+                                       <form method="POST" action="{% url 'edit_subadminusers' %}">
+                                           {% csrf_token %}
+                                           <input type="hidden" name="userids" value="{{newsubadminusers.id}}">
+                                           <button type="submit"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                       </form>
+                                  </td>
+                                  <td>
+                                    <i data-subadmin_user_id="{{newsubadminusers.id}}" id="delete_subadmin_users" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                  </td>
+                               </tr>
+                        {% endfor %}
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="subadmin_user_conformation_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'delete_subadminusers' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="subadminuserid" id="subadminuserid">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

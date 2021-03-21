@@ -1,0 +1,103 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Credit Card Details {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Step - 2 (Credit Card Details) </h2>
+               </div>
+                 <div class="card-header card-header-border-bottom">
+                   <div class="alert" role="alert" style="width: 100%;">
+							 you can add,delete,edit credit account details here
+					</div>
+                    <span id="credit_card_dynamic_div">
+                            {% for newallcreditcard in allcreditcard %}
+                            <button  style="background-color: white;color:#F9A524;" type="button" class="mb-1 btn btn-primary">
+                               xxxx xxxx xxxx {{newallcreditcard.credit_card_number}}
+                               <a><i data-credit_card_id="{{newallcreditcard.id}}" id="delete_credit_card"  class="far fa-window-close" style="color:red;"></i></a>
+                               <a href="{% url 'edit_caredit_card_details' id=newallcreditcard.id %}"><i class="fas fa-edit" style="color:#0f9e0f;"></i></a>
+                            </button>&nbsp;&nbsp;
+                           {% endfor %}
+
+                    </span>
+               </div>
+                <div id="dynamic_div">
+                    <p style="color: red;margin-left: 28px;margin-top: 15px;display:none;" id="creditcard_error">please fill all required fields</p>
+                   <div class="card-body row">
+                          {% csrf_token %}
+                          <div class="col-md-4">
+                                  <div class="form-group">
+                                        <label>Credit Card Number(last 4 digits)* :</label>
+                                        <input type="text" name="credit_card_number"  required id="credit_card_number" class="form-control" placeholder="xxxx">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Credit Limit*</label>
+                                    <input type="text" name="credit_limit"  required id="credit_limit" class="form-control" placeholder="Credit Limit">
+                                  </div>
+                                   <div class="form-group">
+                                    <label>Charges and Fees*:</label>
+                                    <input type="text" name="charges_and_fees"  required id="charges_and_fees" class="form-control" placeholder="Charges & Fees">
+                                  </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Due Date :</label>
+                                    <input type="date" name="due_date"  required id="due_date"  class="form-control">
+                              </div>
+                              <div class="form-group">
+                                    <label>Overdue</label>
+                                    <input type="date" name="overdue"  required id="overdue"  class="form-control">
+                              </div>
+                               <div class="form-group">
+                                    <label>Intrest on Payable (%)</label>
+                                    <input type="text" name="intrest_on_payable" placeholder="Intrest on Payable"  required id="intrest_on_payable"  class="form-control">
+                              </div>
+
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Payment Made</label>
+                                    <input type="text" name="payment_made"  required id="payment_made"  placeholder="Payment Made" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                            <button type="button" id="insert_credit_card_details" class="btn btn-primary btn-default">SAVE</button>
+                              <a href="{% url 'userdetails' %}" class="btn btn-primary btn-info">PREV</a>
+                            <a href="{% url 'otherloans' %}" class="btn btn-primary btn-success">NEXT</a>
+
+                          </div>
+                    </div>
+               </div>
+
+
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+    {% endblock content %}

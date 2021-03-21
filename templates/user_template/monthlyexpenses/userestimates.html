@@ -1,0 +1,234 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Estimate {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<style>
+    input{border:0px solid #000; margin:0; background:transparent; width:100%}
+table tr td{border-right:1px solid #000; border-bottom:1px solid #000;}
+table{background: #fff none repeat scroll 0 0;
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;}
+    table tr:nth-child(even){background:#ccc;}
+    table tr:nth-child(odd){background:#eee;}
+</style>
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="col-lg-12">
+               <div class="card card-default">
+                  <div class="card-header card-header-border-bottom">
+                     <h2>Total Estimation</h2>
+                  </div>
+                  <div class="card-body" style="overflow: auto;">
+                      <table cellpadding="0"; cellspacing="0">
+                               <tr style="text-align: center;">
+                                 <td>#</td>
+                                 {% for newmonthdata in monthdata %}
+                                 <td>{{newmonthdata.month_name}}</td>
+                                 {% endfor  %}
+                               </tr>
+                                <tr>
+                                    <td> Total Income</td>
+                                    {% for newmonthdata in monthdata %}
+                                    <td>
+                                         <input type="text" value="${{newmonthdata.total_income}}" style="text-align: center;" disabled  />
+                                    </td>
+                                   {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Total Tax</td>
+                                    {% for newmonthdata in monthdata %}
+                                    <td>
+                                         <input type="text" value="{{newmonthdata.total_tax}}"   style="text-align: center;" />
+                                    </td>
+                                   {% endfor %}
+                                </tr>
+                                 <tr>
+                                    <td>Total Savings</td>
+                                    {% for newmonthdata in monthdata %}
+                                    <td>
+                                         <input type="text" value="${{newmonthdata.total_tax}}"   style="text-align: center;" />
+                                    </td>
+                                   {% endfor %}
+                                </tr>
+                       </table>
+                  </div>
+               </div>
+            </div>
+
+            <!--income-->
+            <div class="col-lg-12">
+               <div class="card card-default">
+                  <div class="card-header card-header-border-bottom">
+                     <h2>Add income </h2>
+                  </div>
+                  <div class="card-body" style="overflow: auto;">
+                      <table cellpadding="0"; cellspacing="0">
+                               <tr style="text-align: center;">
+                                 <td>Name</td>
+                                 {% for newtotalmonths in totalmonths %}
+                                 <td>{{newtotalmonths}}</td>
+                                 {% endfor  %}
+                               </tr>
+                                {% for newallincome in allincome%}
+                                 <tr>
+                                    <td><input type="text" value="{{newallincome.name}}" id="name{{newallincome.is_row}}" onchange="UpdateNameFunction('{{newallincome.is_row}}')" name="name" id="name" style="text-align: center;"/></td>
+                                    {% for newtotalmonths in totalmonths %}
+                                    <td>
+                                         <input type="hidden" name="income_id"  id="income_id{{forloop.counter}}{{newallincome.is_row}}" value="{% for singleincome in newallincome.incomedata %}{% if singleincome.month == newtotalmonths %}{{singleincome.id}}{% endif  %}{% endfor %}">
+                                         <input type="text" name="income" id="income{{forloop.counter}}{{newallincome.is_row}}" onchange="InsertincomeFunction('{{forloop.counter}}{{newallincome.is_row}}')" class="income" value="{% for singleincome in newallincome.incomedata %}{% if singleincome.month == newtotalmonths %}{{singleincome.income}} {% endif  %}{% endfor %}" style="text-align: center;"/>
+                                    </td>
+                                    {% endfor %}
+                                 </tr>
+                                {% endfor %}
+                                <tr>
+                                        <td><input type="text" name="new_name" placeholder="Family Member Name" style="text-align: center;" onchange="SaveIncomeFunction()" id="new_name"/></td>
+                                        {% for newtotalmonths in totalmonths %}
+                                        <td>
+                                             <input type="text" name="income" id="income{{forloop.counter}}" onchange="NewincomeFunction({{forloop.counter}})" />
+                                        </td>
+                                       {% endfor %}
+                                </tr>
+                       </table>
+                      <p style="color:red;display:none;" id="income_errors">plase enter name first</p><br>
+                      <button type="button" class="mb-1 btn btn-sm btn-secondary" onclick="saveFunction()">save</button>
+                  </div>
+               </div>
+            </div>
+
+            <!--tax-->
+             <div class="col-lg-12">
+               <div class="card card-default">
+                  <div class="card-header card-header-border-bottom">
+                     <h2>Add Tax</h2>
+                  </div>
+                  <div class="card-body" style="overflow: auto;">
+                      <table cellpadding="0"; cellspacing="0">
+                               <tr style="text-align: center;">
+                                 <td>Name</td>
+                                 {% for newtotalmonths in totalmonths %}
+                                 <td>{{newtotalmonths}}</td>
+                                 {% endfor  %}
+                               </tr>
+
+                               {% for newalltax in alltax %}
+                               <tr>
+                                    <td>
+                                        <input type="text" value="{{newalltax.member_name}}" name="member_name" id="member_name{{newalltax.tax_row}}" onchange="UpdatetaxNameFunction('{{newalltax.tax_row}}')" style="text-align: center;"/>
+                                    </td>
+                                    {% for newtotalmonths in totalmonths %}
+                                    <td style="text-align: center;padding: 10px;">
+                                            <input type="hidden" name="tax_id" id="tax_id{{forloop.counter}}{{newalltax.tax_row}}" value="{% for singletax in newalltax.tax %}{% if singletax.month == newtotalmonths %}{{singletax.id}}{% endif %}{% endfor %}">
+                                             <select name="tax_category_id" id="tax_category_id{{forloop.counter}}{{newalltax.tax_row}}" onchange="SavetaxcatFunction('{{forloop.counter}}{{newalltax.tax_row}}')" >
+                                                <option>--select tax category--</option>
+                                                {% for newtax_category in tax_category %}
+                                                <option value="{{newtax_category.id}}"  {% for singletax in newalltax.tax %}{% if singletax.month == newtotalmonths %} {% if newtax_category.id == singletax.tax_category_id %}  selected {% endif %} {% endif  %}{% endfor %}>{{newtax_category.tax_category_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="text" name="tax_per" id="tax_per{{forloop.counter}}{{newalltax.tax_row}}"  value="{% for singletax in newalltax.tax %}{% if singletax.month == newtotalmonths %}{{singletax.tax_per}} {% endif  %}{% endfor %}" onchange="EditTaxFunction('{{forloop.counter}}{{newalltax.tax_row}}')" style="text-align: center;margin: 5px;border: 1px solid #707979;width: 156px;"/>
+                                    </td>
+                                    {% endfor %}
+                               </tr>
+                               {% endfor %}
+
+
+                                <tr  style="text-align:center;">
+                                        <td><input type="text" name="family_member_name_tax" placeholder="Name" onchange="SaveTaxNameFunction()" id="family_member_name_tax" style="text-align: center;"/></td>
+                                        {% for newtotalmonths in totalmonths %}
+                                        <td style="text-align:center;padding: 10px;">
+                                            <select>
+                                                <option>--select tax category--</option>
+                                                <option>add family member name first</option>
+                                            </select>
+                                            <input type="text" name="tax_per" id="tax_per" placeholder="tax per(%)" style="text-align: center;"/>
+                                        </td>
+                                       {% endfor %}
+                               </tr>
+                       </table>
+                      <p style="color:red;display:none;" id="income_errors">plase enter name first</p><br>
+                      <button type="button" class="mb-1 btn btn-sm btn-secondary" onclick="saveFunction()">save</button>
+                  </div>
+               </div>
+            </div>
+
+            <!--savings--->
+           <div class="col-lg-12">
+               <div class="card card-default">
+                  <div class="card-header card-header-border-bottom">
+                     <h2>Add Savings</h2>
+                  </div>
+                  <div class="card-body" style="overflow: auto;">
+                      <table cellpadding="0"; cellspacing="0">
+                               <tr style="text-align: center;">
+                                 <td>Name</td>
+                                 {% for newtotalmonths in totalmonths %}
+                                 <td>{{newtotalmonths}}</td>
+                                 {% endfor  %}
+                               </tr>
+
+                               {% for newallsavings in allsavings %}
+                               <tr>
+                                    <td>
+                                        <input type="text" value="{{newallsavings.family_member_name}}" name="family_member_names" id="family_member_names{{newallsavings.saving_row}}" onchange="UpdatesavingprFunction('{{newallsavings.saving_row}}')" style="text-align: center;"/>
+                                    </td>
+                                    {% for newtotalmonths in totalmonths %}
+                                    <td style="text-align: center;padding: 10px;">
+                                            <input type="hidden" name="saving_id" id="saving_id{{forloop.counter}}{{newallsavings.saving_row}}" value="{% for singlesaving in newallsavings.saving %}{% if singlesaving.month == newtotalmonths %}{{singlesaving.id}}{% endif %}{% endfor %}">
+                                             <select name="saving_category_id" id="saving_category_id{{forloop.counter}}{{newallsavings.saving_row}}" onchange="SaveSavingperFunction('{{forloop.counter}}{{newallsavings.saving_row}}')" >
+                                                <option>--select tax category--</option>
+                                                {% for newsavings_category in savings_category %}
+                                                <option value="{{newsavings_category.id}}"  {% for singlesaving in newallsavings.saving %}{% if singlesaving.month == newtotalmonths %} {% if newsavings_category.id == singlesaving.saving_category_id %}  selected {% endif %} {% endif  %}{% endfor %}>{{newsavings_category.saving_category_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="text" name="saving_per" id="saving_per{{forloop.counter}}{{newallsavings.saving_row}}"  value="{% for singlesaving in newallsavings.saving %}{% if singlesaving.month == newtotalmonths %}{{singlesaving.saving_per}} {% endif  %}{% endfor %}" onchange="EditsavingperFunction('{{forloop.counter}}{{newallsavings.saving_row}}')" style="text-align: center;margin: 5px;border: 1px solid #707979;width: 156px;"/>
+                                    </td>
+                                    {% endfor %}
+                               </tr>
+                               {% endfor %}
+
+
+                                <tr style="text-align: center;">
+                                        <td><input type="text" name="family_member_name" placeholder="Name" onchange="InsertSavingsnameFunction()" id="family_member_name" style="text-align: center;"/></td>
+                                        {% for newtotalmonths in totalmonths %}
+                                        <td style="text-align: center;padding: 10px;">
+                                            <select>
+                                                <option>--select savings category--</option>
+                                                <option>add family member name first</option>
+                                            </select>
+                                            <input type="text" name="saving_per" id="saving_per" placeholder="saving per(%)" style="text-align: center;"/>
+                                        </td>
+                                       {% endfor %}
+                               </tr>
+                       </table>
+                      <p style="color:red;display:none;" id="income_errors">plase enter name first</p><br>
+                      <button type="button" class="mb-1 btn btn-sm btn-secondary" onclick="saveFunction()">save</button>
+                  </div>
+               </div>
+            </div>
+
+
+
+
+
+
+
+
+         </div>
+      </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,123 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Edit Users {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Users Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'updateusers' %}" enctype="multipart/form-data">
+                      <input type="hidden" name="usersids" value="{{userdata.id}}">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Select Subadmin:</label>
+						<select class="form-control" name="subadmin_id" id="subadmin_id">
+                             <option selected value="">--select subadmin--</option>
+                            {% for newsubadmindata in subadmindata %}
+                            <option value="{{newsubadmindata.id}}" {% if userdata.subadmin_id == newsubadmindata.id %} selected {% endif %} >{{newsubadmindata.subadmin_name}}</option>
+                            {% endfor %}
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Client Name :</label>
+						<input type="text" name="username" value="{{userdata.username}}" required id="username" class="form-control" placeholder="Name">
+                      </div>
+                      <div class="form-group">
+                        <label>Client BirthDate :</label>
+						<input type="date" name="age" required id="age" class="form-control" value="{{userdata.dateFormat_birthdate}}" placeholder="Birthdate">
+                      </div>
+
+                      <div class="form-group">
+                        <label>Gender:</label>
+						<select class="form-control" name="gender" id="gender">
+
+                            <option value="male" {% if userdata.gender == "male" %} selected {% endif %} >Male</option>
+                            <option value="female" {% if userdata.gender == "female" %} selected {% endif %} >Female</option>
+                            <option value="other" {% if userdata.gender == "other" %} selected {% endif %} >Other</option>
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Client Email :</label>
+						<input type="text" name="email" value="{{userdata.email}}" required id="email" class="form-control" placeholder="Email">
+                      </div>
+                      <div class="form-group">
+                        <label>Password :</label>
+						<input type="text" name="password" value="{{userdata.password}}" required id="password" class="form-control" placeholder="Password">
+                      </div>
+                       <div class="form-group">
+                        <label>Mobile Number :</label>
+						<input type="text" name="mobile" value="{{userdata.mobile}}" required id="mobile" class="form-control" placeholder="Mobile">
+                       </div>
+                       <div class="form-group">
+                        <label>Address :</label>
+                          <textarea class="form-control"  placeholder="Address" name="address" id="address">{{userdata.address}}</textarea>
+                       </div>
+                      {% comment %} <div class="form-group">
+                        <label>Goal :</label>
+                          <textarea class="form-control"  placeholder="Goal"    name="goal" id="goal">{{userdata.goal}}</textarea>
+                       </div> {% endcomment %}
+                      <div class="form-group">
+                        <label>Service Subscription Time (From):</label>
+                          <input type="date"  class="form-control" onchange="checkdate()" value="{{userdata.dateFormat_subscription_from_time}}"  name="subscription_from_time" id="subscription_from_time">
+                       </div>
+                      <div class="form-group">
+                        <label>Service Subscription Time (To):</label>
+                          <input type="date" class="form-control" onchange="checkdate()" value="{{userdata.dateFormat_subscription_to_time}}"  name="subscription_to_time" id="subscription_to_time">
+                       </div>
+                       <div class="form-group">
+                        <label>Select Income Categories:</label><input type="checkbox" id="clear" onclick="clearAll()">Clear All Selected
+                          <select id="income_categories" class="form-control" name="income_categories" multiple>
+                            {% for categories in income_categories %}
+                              <option value="{{categories.income_category_name}}" {% if categories.income_category_name in income_category %}selected{% endif %}>{{categories.income_category_name}}</option>
+                            {% endfor %}
+                          </select>
+                       </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">UPDATE</button>
+                        <a href="{% url 'adminusers' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+<script>
+  function checkdate(){
+    var from = document.getElementById('subscription_from_time').value;
+    var to = document.getElementById('subscription_to_time').value;
+    if ( from && to && from > to ){
+      alert("From date can not be more than to date");
+      document.getElementById('subscription_from_time').value = "";
+      document.getElementById('subscription_to_time').value = "";
+    }
+  }
+  function clearAll(){
+    var checkBox = document.getElementById("clear");
+  if (checkBox.checked == true){
+    $("#income_categories option:selected").removeAttr("selected");
+  } 
+  }
+</script>
+{% endblock content %}

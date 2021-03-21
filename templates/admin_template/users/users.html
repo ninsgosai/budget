@@ -1,0 +1,153 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %}Users {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                  <h2>Users</h2>
+                  <a href="{% url 'addusers' %}"  title="Add Users" class="btn btn-outline-primary btn-sm text-uppercase">+</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+                  <div class="basic-data-table">
+                     <table id="basic-data-table" class="table nowrap" style="width:100%">
+                        <thead>
+                           <tr>
+                              <th>Sl No</th>
+                              <th>Client Name</th>
+                              <th>BirthDate</th>
+                              <th>Email</th>
+                              <th>Mobile</th>
+                              <th>Estimate Expense</th>
+                              <th>Edit</th>
+                              <th>Delete</th>
+                              <th>Status</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for newuserdata in userdata %}
+                               <tr>
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{newuserdata.username}}</td>
+                                  <td>{{newuserdata.age}}</td>
+                                  <td>{{newuserdata.email}}</td>
+                                  <td>{{newuserdata.mobile}}</td>
+                                  <td><a href="{% url 'view_estimate_expanse' id=newuserdata.id %}" title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">view</a></td>
+                                  <td>
+                                    <a href={% url 'edituser' pk=newuserdata.id %}><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></a>
+                                  </td>
+                                  <td>
+                                    <i data-user_id="{{newuserdata.id}}" id="delete_users" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                  </td>
+                                  <td>
+                                  {% if newuserdata.status %}
+                                    <button class="btn btn-success" id="btn-{{newuserdata.pk}}" onclick="changeStatus({{newuserdata.pk}},1)">On</button>
+                                  {% else %}
+                                    <button class="btn btn-danger" id="btn-{{newuserdata.pk}}" onclick="changeStatus({{newuserdata.pk}},2)">Off</button>
+                                  {% endif %}
+                                  </td>
+                               </tr>
+                        {% endfor %}
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+
+<script>
+function changeStatus(id,call){
+    if (call==1){
+        if (confirm('Are you sure you want to Deactivate The User ?')) {
+            $.ajax({
+                    url: '/adminusers/changeStatus',
+                    method: 'POST',
+                    data: {
+                        'pk' : id,
+                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success:function(result)
+                    {
+                        Swal.fire(
+                              'User Deactivated!',
+                              '',
+                              'success'
+                            ).then((value) => {
+                                document.getElementById('btn-'+id).innerHTML ="Off";
+                                document.getElementById('btn-'+id).classList.remove('btn-success');
+                                document.getElementById('btn-'+id).classList.add('btn-danger');
+                                document.getElementById('btn-'+id).setAttribute( "onClick", "javascript: changeStatus("+id+",2);" );
+                            });
+                    }
+            });
+        } 
+    }
+    else{
+        if (confirm('Are you sure you want to Activate The User ?')) {
+            $.ajax({
+                    url: '/adminusers/changeStatus',
+                    method: 'POST',
+                    data: {
+                        'pk' : id,
+                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success:function(result)
+                    {
+                        Swal.fire(
+                              'User Activated!',
+                              '',
+                              'success'
+                            ).then((value) => {
+                                document.getElementById('btn-'+id).innerHTML ="On";
+                                document.getElementById('btn-'+id).classList.remove('btn-danger');
+                                document.getElementById('btn-'+id).classList.add('btn-success');
+                                document.getElementById('btn-'+id).setAttribute( "onClick", "javascript: changeStatus("+id+",1);" );
+                            });
+                    }
+            });
+        } 
+    }
+}
+</script>
+
+<div class="modal fade" id="user_conformation_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'deleteuser' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="userid" id="userid">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

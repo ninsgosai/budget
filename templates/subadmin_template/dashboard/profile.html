@@ -1,0 +1,57 @@
+{% extends "subadmin_template/base.html" %}
+{% block page_title %} User Profile {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Update Profile Here</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'updatesubadminprofile' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Email :</label>
+						<input type="email"  value="{{subadmindata.subadmin_email}}" name="subadmin_email" required id="subadmin_email" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Email :</label>
+						<input type="text"  value="{{subadmindata.subadmin_name}}" name="subadmin_name" required id="subadmin_name" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        {% comment %} <label>Password:</label> {% endcomment %}
+						<input type="hidden"  value="{{subadmindata.subadmin_password}}" name="subadmin_password" required id="subadmin_password" class="form-control" >
+                      </div>
+                      <div class="form-group">
+                        <label>Profile Photo :{% if subadmindata.profile_pic %} Current is :<a href="{{subadmindata.profile_pic.url}}">{{subadmindata.profile_pic.url}}</a>{% endif %}</label>
+						<input type="file"  value="" name="subadmin_photo" id="subadmin_photo" accept="image/*" class="form-control" >
+                      </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">UPDATE</button>
+                        <a href="{% url 'subadmindashboard' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}

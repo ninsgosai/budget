@@ -1,0 +1,151 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %}Subadmins {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-12">
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom d-flex justify-content-between">
+                  <h2>Subadmins</h2>
+                  <a href="{% url 'addsubadmin' %}"  title="Add Skills" class="btn btn-outline-primary btn-sm text-uppercase">+</a>
+               </div>
+               <div class="card-body">
+                   {% if messages %}
+                                <ul class="messages">
+                                    {% for msg in messages %}
+                                        <li>
+                                            <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                                {{msg.message}}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                   {% endif %}
+                  <div class="basic-data-table">
+                     <table id="basic-data-table" class="table nowrap" style="width:100%">
+                        <thead>
+                           <tr>
+                              <th>Sl No</th>
+                              <th>Subadmin Name</th>
+                              <th>Email</th>
+                              <th>Edit</th>
+                              <th>Delete</th>
+                              <th>Status</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for newsubadmindata in subadmindata %}
+                               <tr>
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{newsubadmindata.subadmin_name}}</td>
+                                  <td>{{newsubadmindata.subadmin_email}}</td>
+                                  <td>
+                                       <form method="POST" action="{% url 'editsubadmin' %}">
+                                           {% csrf_token %}
+                                           <input type="hidden" name="subadminids" value="{{newsubadmindata.id}}">
+                                           <button type="submit"><i style="font-size: 25px;color:green;" class="fas fa-edit"></i></button>
+                                       </form>
+                                  </td>
+                                  <td>
+                                    <i data-subadmin_id="{{newsubadmindata.id}}" id="delete_subadmin" style="font-size: 25px;color:red;"  class="far fa-trash-alt"></i>
+                                  </td>
+                                  <td>
+                                  {% if newsubadmindata.status %}
+                                    <button class="btn btn-success" id="btn-{{newsubadmindata.pk}}" onclick="changeSubStatus({{newsubadmindata.pk}},1)">On</button>
+                                  {% else %}
+                                    <button class="btn btn-danger" id="btn-{{newsubadmindata.pk}}" onclick="changeSubStatus({{newsubadmindata.pk}},2)">Off</button>
+                                  {% endif %}
+                                  </td>
+                               </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+  </div>
+</div>
+<script>
+function changeSubStatus(id,call){
+    if (call==1){
+        if (confirm('Are you sure you want to Deactivate The User ?')) {
+            $.ajax({
+                    url: '/adminusers/changeSubStatus',
+                    method: 'POST',
+                    data: {
+                        'pk' : id,
+                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success:function(result)
+                    {
+                        Swal.fire(
+                              'User Deactivated!',
+                              '',
+                              'success'
+                            ).then((value) => {
+                                document.getElementById('btn-'+id).innerHTML ="Off";
+                                document.getElementById('btn-'+id).classList.remove('btn-success');
+                                document.getElementById('btn-'+id).classList.add('btn-danger');
+                                document.getElementById('btn-'+id).setAttribute( "onClick", "javascript: changeSubStatus("+id+",2);" );
+                            });
+                    }
+            });
+        } 
+    }
+    else{
+        if (confirm('Are you sure you want to Activate The User ?')) {
+            $.ajax({
+                    url: '/adminusers/changeSubStatus',
+                    method: 'POST',
+                    data: {
+                        'pk' : id,
+                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success:function(result)
+                    {
+                        Swal.fire(
+                              'User Activated!',
+                              '',
+                              'success'
+                            ).then((value) => {
+                                document.getElementById('btn-'+id).innerHTML ="On";
+                                document.getElementById('btn-'+id).classList.remove('btn-danger');
+                                document.getElementById('btn-'+id).classList.add('btn-success');
+                                document.getElementById('btn-'+id).setAttribute( "onClick", "javascript: changeSubStatus("+id+",1);" );
+                            });
+                    }
+            });
+        } 
+    }
+}
+</script>
+
+<div class="modal fade" id="subadmin_conformation_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalSmallTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalSmallTitle">are you sure you want to delete?</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pill" data-dismiss="modal">No</button>
+                <form method="POST" action="{% url 'deletesubadmin' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="subadminid" id="subadminid">
+                    <button type="submit" class="btn btn-primary btn-pill">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

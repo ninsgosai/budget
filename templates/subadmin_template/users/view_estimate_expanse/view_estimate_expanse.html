@@ -1,0 +1,63 @@
+{% extends "subadmin_template/base.html" %}
+{% block page_title %}Estimate Expanse{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="alert alert-primary alert-highlighted" role="alert">
+                {{userdata.username}} have choose subscription time period from <span class="badge badge-secondary">{{from_date}}</span> to <span class="badge badge-secondary">{{to_date}}</span>
+			</div>
+            <p>{{userdata.username}}'s income,savings,tax and estimate expenses from <b>{{from_date}}</b> to <b>{{to_date}}</b> are mentioned below</p><br>
+             <div class="row">
+                {% for newmonthdata in monthdata %}
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <div class="media widget-media p-4 bg-white border">
+                            <div class="d-flex rounded-circle align-items-center justify-content-center mr-3 media-icon iconbox-45 bg-primary text-white">
+                                <i class="mdi mdi-calendar-blank font-size-20"></i>
+                              </div>
+                             <div class="media-body align-self-center">
+                                <h4 class="text-primary mb-2">
+                                 <p>{{newmonthdata.month_name}}</p></h4>
+                                 <p>Estimate Income : ${{newmonthdata.total_income}}</p><br>
+                                 <p>Estimate Tax : {{newmonthdata.total_tax}}%</p><br>
+                                 <p>Estimate Savings : {{newmonthdata.total_savings}}%</p><br>
+                                 <p>Estimate Expense : ${{newmonthdata.total_expanse}} </p><br>
+                                 <p>
+                                     <form method="POST" action="{% url 'subadmin_monthwise_estimate' %}">
+                                                 {% csrf_token %}
+                                        <input type="hidden" name="month" value="{{newmonthdata.month_name}}">
+                                        <input type="hidden" name="user_id" value="{{userdata.id}}">
+                                        <button class="mb-1 btn btn-sm btn-outline-info">View Estimate Expense</button>
+                                     </form>
+
+                                 </p>
+                             </div>
+                        </div>
+                    </div>
+                 {% endfor %}
+             </div>
+            <a href="{% url 'subadminusers' %}" style="float: right;" type="button" class="mb-1 btn btn-primary">BACK</a>
+
+
+
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}

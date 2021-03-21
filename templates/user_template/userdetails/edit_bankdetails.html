@@ -1,0 +1,102 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Edit Bank Details {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Edit Here</h2>
+               </div>
+
+                <div id="dynamic_div">
+                    <p style="color: red;margin-left: 28px;margin-top: 15px;display:none;" id="edit_bank_error">please fill all required fields</p>
+                   <div class="card-body row">
+
+                           <input type="hidden" name="bank_hidden_id" id="bank_hidden_id" value="{{bankdata.id}}">
+                          {% csrf_token %}
+                          <div class="col-md-4">
+                                  <div class="form-group">
+                                        <label>Bank Name* :</label>
+                                        <input type="text" name="bank_name"  required id="bank_name" value="{{bankdata.bank_name}}" class="form-control" placeholder="Bank Name">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Account Number (last 4 digits)*:</label>
+                                    <input type="text" name="account_number"  required id="account_number" value="{{bankdata.account_number}}" class="form-control" placeholder="xxxx">
+                                  </div>
+                                   <div class="form-group">
+                                    <label>O/D token* :</label>
+                                    <input type="text" name="od_token"  required id="od_token" value="{{bankdata.od_token}}" class="form-control" placeholder="O/D Token">
+                                  </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Current Balance* :</label>
+                                    <input type="text" name="current_balance" value="{{bankdata.current_balance}}"  required id="current_balance" placeholder="Current Balance" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label>Intrest Time Period*:</label>
+                                <select class="form-control" name="intrest_time_period" id="intrest_time_period">
+                                    <option selected value="0">--select time period--</option>
+                                    <option value="weekly" {% if bankdata.intrest_time_period == 'weekly' %} selected {% endif %} >Weekly</option>
+                                    <option value="monthly" {% if bankdata.intrest_time_period == 'monthly' %} selected {% endif %} >Monthly</option>
+                                    <option value="yearly" {% if bankdata.intrest_time_period == 'yearly' %} selected {% endif %} >yearly</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label>Intrest Type*:</label>
+                                <select class="form-control" name="intrest_type" id="intrest_type">
+                                    <option selected value="0" >--select intrest type--</option>
+                                    <option value="simple" {% if bankdata.intrest_type == 'simple' %} selected {% endif %} >Simple </option>
+                                    <option value="compound" {% if bankdata.intrest_type == 'compound' %} selected {% endif %} >Compound</option>
+                                </select>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Intrest Rate(%)*:</label>
+                                  <input type="text" name="intrest_rate"  value="{{bankdata.intrest_rate}}" required id="intrest_rate" placeholder="Intrest Rate" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                            <button type="button" id="update_bank_details"  class="btn btn-primary btn-default">UPDATE</button>
+                            <a href="{% url 'userdetails' %}" class="btn btn-primary btn-default">BACK</a>
+                          </div>
+
+                    </div>
+               </div>
+
+
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+    {% endblock content %}

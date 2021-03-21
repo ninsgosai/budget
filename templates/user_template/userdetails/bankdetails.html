@@ -1,0 +1,117 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Bank Details {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+          <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Step - 1 (Bank Details) </h2>
+               </div>
+               <div class="card-header card-header-border-bottom">
+                    <div class="alert" role="alert" style="width: 100%;">
+							 you can add,delete,edit bank account details here
+					</div>
+                    <span id="bank_dynamic_div">
+                            {% for newbankdetails in bankdetails %}
+                            <button  style="background-color: white;color:#F9A524;" type="button" class="mb-1 btn btn-primary">
+                               xxxx xxxx xxxx {{newbankdetails.account_number}}
+                               <a><i data-bank_id="{{newbankdetails.id}}" id="delete_bank_details" class="far fa-window-close" style="color:red;"></i></a>
+                               <a href="{% url 'fetchbankdetails' id=newbankdetails.id %}"><i class="fas fa-edit" style="color:#0f9e0f;"></i></a>
+                            </button>&nbsp;&nbsp;
+                           {% endfor %}
+
+                    </span>
+               </div>
+
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Here </h2>
+               </div>
+                <div id="dynamic_div">
+                    <p style="color: red;margin-left: 28px;margin-top: 15px;display:none;" id="bank_detail_error">please fill all required fields</p>
+                   <div class="card-body row">
+                          {% csrf_token %}
+                          <div class="col-md-4">
+                                  <div class="form-group">
+                                        <label>Bank Name* :</label>
+                                        <input type="text" name="bank_name"  required id="bank_name" class="form-control" placeholder="Bank Name">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Account Number (last 4 digits)*:</label>
+                                    <input type="text" name="account_number"  required id="account_number" class="form-control" placeholder="xxxx">
+                                  </div>
+                                   <div class="form-group">
+                                    <label>O/D Taken* :</label>
+                                    <input type="text" name="od_token"  required id="od_token" class="form-control" placeholder="O/D Taken">
+                                  </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Current Balance* :</label>
+                                    <input type="text" name="current_balance"  required id="current_balance" placeholder="Current Balance" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label>Intrest Time Period*:</label>
+                                <select class="form-control" name="intrest_time_period" id="intrest_time_period">
+                                    <option selected value="0">--select time period--</option>
+                                    <option value="weekly" >Weekly</option>
+                                    <option value="monthly" >Monthly</option>
+                                    <option value="yearly" >yearly</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label>Intrest Type*:</label>
+                                <select class="form-control" name="intrest_type" id="intrest_type">
+                                    <option selected value="0" >--select intrest type--</option>
+                                    <option value="simple" >Simple </option>
+                                    <option value="compound" >Compound</option>
+                                </select>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Intrest Rate(%)*:</label>
+                                  <input type="text" name="intrest_rate"  required id="intrest_rate" placeholder="Intrest Rate" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                            <button type="button" id="insert_bank_details" class="btn btn-primary btn-default">SAVE</button>
+                            <a href="{% url 'creditcarddetails' %}" class="btn btn-primary btn-success">NEXT</a>
+
+                          </div>
+                    </div>
+               </div>
+
+
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+    {% endblock content %}

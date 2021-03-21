@@ -1,0 +1,88 @@
+{% extends "user_template/base.html" %}
+{% block page_title %} Credit Card Details {% endblock %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Edit Credit Card Details </h2>
+               </div>
+
+                <div id="dynamic_div">
+                    <p style="color: red;margin-left: 28px;margin-top: 15px;display:none;" id="edit_creditcard_error">please fill all required fields</p>
+                   <div class="card-body row">
+                          {% csrf_token %}
+                       <input type="hidden" name="credit_hidden_val" id="credit_hidden_val" value="{{creditdata.id}}">
+                          <div class="col-md-4">
+                                  <div class="form-group">
+                                        <label>Credit Card Number(last 4 digits)* :</label>
+                                        <input type="text" value="{{creditdata.credit_card_number}}" name="credit_card_number"  required id="credit_card_number" class="form-control" placeholder="xxxx">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Credit Limit*</label>
+                                    <input type="text" name="credit_limit" value="{{creditdata.credit_limit}}"  required id="credit_limit" class="form-control" placeholder="Credit Limit">
+                                  </div>
+                                   <div class="form-group">
+                                    <label>Charges and Fees*:</label>
+                                    <input type="text" name="charges_and_fees" value="{{creditdata.charges_and_fees}}"  required id="charges_and_fees" class="form-control" placeholder="Charges & Fees">
+                                  </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Due Date :</label>
+                                    <input type="date" name="due_date"  required id="due_date" value="{{creditdata.due_date}}"  class="form-control">
+                              </div>
+                              <div class="form-group">
+                                    <label>Overdue</label>
+                                    <input type="date" name="overdue"  required id="overdue" value="{{creditdata.overdue}}"   class="form-control">
+                              </div>
+                               <div class="form-group">
+                                    <label>Intrest on Payable (%)</label>
+                                    <input type="text" name="intrest_on_payable" placeholder="Intrest on Payable" value="{{creditdata.intrest_on_payable}}"  required id="intrest_on_payable"  class="form-control">
+                              </div>
+
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                    <label>Payment Made</label>
+                                    <input type="text" name="payment_made"  required id="payment_made" value="{{creditdata.payment_made}}"  placeholder="Payment Made" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                            <button type="button" id="update_credit_card" class="btn btn-primary btn-default">UPDATE</button>
+                            <a href="{% url 'creditcarddetails' %}"  class="btn btn-primary btn-default">BACK</a>
+                          </div>
+                    </div>
+               </div>
+
+
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+    {% endblock content %}

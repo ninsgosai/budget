@@ -1,0 +1,54 @@
+{% extends "admin_template/base.html" %}
+{% block page_title %} Add Subcategories {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="content">
+
+      <div class="row">
+        <div class="col-12">
+             {% if messages %}
+                    <ul class="messages">
+                        {% for msg in messages %}
+                            <li>
+                                <div class="alert alert-{{msg.level_tag}}" role="alert" id="alertmsg">
+                                    {{msg.message}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
+
+            <div class="card card-default">
+               <div class="card-header card-header-border-bottom">
+                  <h2>Add Subcategories</h2>
+               </div>
+               <div class="card-body">
+                  <form method="POST" action="{%  url 'add_subcategories' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label>Select Category:</label>
+						<select class="form-control" name="budget_subcategory_id" id="budget_subcategory_id" required>
+                             <option selected>--select  category--</option>
+                            {% for newcategorys in categorys %}
+                            <option value="{{newcategorys.id}}" >{{newcategorys.subcategory_name}}</option>
+                            {% endfor %}
+                        </select>
+                     </div>
+                      <div class="form-group">
+                        <label>Subcategory Name :</label>
+						<input type="text" name="last_category_name" required id="last_category_name" class="form-control" placeholder="Subcategory Name">
+                      </div>
+                      <div class="form-footer pt-4 pt-5 mt-4 border-top">
+                        <button type="submit" class="btn btn-primary btn-default">ADD</button>
+                        <a href="{% url 'subcategory' %}" class="btn btn-secondary btn-default">BACK</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}
